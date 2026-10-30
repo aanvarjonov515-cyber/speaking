@@ -1,0 +1,6 @@
+{
+  "name": "English AI Teacher Desktop",
+  "description": "Professional desktop application for learning English with a 3D VRM AI Teacher avatar, real-time sentence reading, word exploration, and comprehension analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

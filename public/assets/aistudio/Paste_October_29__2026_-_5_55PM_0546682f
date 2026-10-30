@@ -1,0 +1,3422 @@
+# ENGLISH AI TEACHER DESKTOP APP
+# PHASE 2 — PROFESSIONAL SPEAKING MODULE
+
+Mavjud **English AI Teacher Desktop Application** loyihasini davom ettir.
+
+Bu yangi standalone loyiha EMAS.
+
+Oldingi loyihada mavjud:
+
+- Electron
+- React
+- Vite
+- TypeScript
+- Reading Module
+- AI Provider Manager
+- Local database
+- Settings
+- VRM Teacher
+- Global user profile
+- Progress system
+
+arxitekturasini saqla va Speaking modulini shu mavjud loyihaga integratsiya qil.
+
+Asosiy katta tablar:
+
+`READING | SPEAKING | WRITING`
+
+Reading mavjud.
+
+Hozir **SPEAKING** modulini professional darajada yarat.
+
+Writing hozircha placeholder holatda qolishi mumkin.
+
+---
+
+# 1. ENG MUHIM ARXITEKTURA QOIDASI
+
+VRM Teacher har bir modul uchun alohida yaratilmasin.
+
+App ichida:
+
+`GlobalTeacherManager`
+
+yoki shunga o‘xshash yagona teacher service/store bo‘lsin.
+
+Foydalanuvchi Settings ichida bir marta:
+
+- VRM model
+- teacher name
+- teacher voice
+- teacher gender/persona
+- personality
+- speaking speed
+- language
+- animation preferences
+
+tanlasa, aynan shu teacher:
+
+Reading
+
+Speaking
+
+Writing
+
+Home
+
+va boshqa kerakli joylarda ishlasin.
+
+Masalan foydalanuvchi Reading’da `Teacher: Aisha` tanlasa:
+
+Speaking’ga o‘tganda boshqa avatar paydo bo‘lmasin.
+
+Xuddi o‘sha:
+
+- VRM
+- ovoz
+- teacher identity
+- personality
+- user memory
+
+davom etsin.
+
+Teacher — butun app bo‘yicha bitta doimiy AI o‘qituvchi.
+
+---
+
+# 2. GLOBAL TEACHER STATE
+
+Global Teacher state kamida:
+
+```ts
+TeacherProfile {
+  id
+  name
+  vrmModel
+  avatarSettings
+  preferredVoice
+  uzbekVoice
+  englishVoice
+  personality
+  correctionStyle
+  speakingSpeed
+  animationEnabled
+  lipSyncEnabled
+  emotionEnabled
+}
+```
+
+saqlasin.
+
+Buni har bir component ichida qayta yaratma.
+
+Global store/service orqali boshqar.
+
+---
+
+# 3. SPEAKING MAIN SCREEN
+
+Speaking tab ochilganda professional dashboard chiqsin.
+
+Header:
+
+`Speaking`
+
+Subtitle:
+
+`Practice real English conversations with your AI teacher.`
+
+Yuqorida:
+
+Current level: A1 / A2 / B1 / B2 / C1
+
+Today's speaking:
+
+`0 / 15 min`
+
+Weekly:
+
+`72 min`
+
+Streak:
+
+`🔥 6 days`
+
+---
+
+# 4. SPEAKING ICHKI TABLARI
+
+Speaking ichida quyidagi sub-tabs bo‘lsin:
+
+### 1. Talk
+Erkin AI conversation.
+
+### 2. Lessons
+Bosqichma-bosqich speaking lesson.
+
+### 3. Role Play
+Real hayot scenario'lari.
+
+### 4. Pronunciation
+Word, sentence va phoneme mashqlari.
+
+### 5. Shadowing
+Teacher ortidan takrorlash.
+
+### 6. Read & Talk
+Reading bilan Speaking integratsiyasi.
+
+### 7. Challenges
+Speaking challenge va daily missions.
+
+### 8. Review
+Xatolar, recordings, corrections va qayta mashq.
+
+UI haddan tashqari to‘lib ketmasligi uchun secondary features dropdown yoki "More" ichiga joylashtirilishi mumkin.
+
+---
+
+# 5. QUICK TALK
+
+Speaking Home'dagi eng asosiy katta button:
+
+`Start Conversation`
+
+Bosilganda foydalanuvchi darhol AI Teacher bilan gaplashishni boshlasin.
+
+AI avval:
+
+`Hi! How are you today?`
+
+kabi natural suhbat boshlasin.
+
+Agar foydalanuvchi Beginner/A1 bo‘lsa:
+
+teacher sekin va sodda gapirsin.
+
+Agar B2/C1 bo‘lsa:
+
+normal, tabiiy conversation ishlatsin.
+
+---
+
+# 6. REAL VOICE CONVERSATION
+
+Conversation real-time ko‘rinishga maksimal yaqin bo‘lsin.
+
+Workflow:
+
+User speaks
+
+↓
+
+Speech-to-Text
+
+↓
+
+AI understands conversation context
+
+↓
+
+AI generates natural answer
+
+↓
+
+Text-to-Speech
+
+↓
+
+VRM Teacher speaks
+
+↓
+
+Lip sync + facial animation
+
+Foydalanuvchi tugmani har safar bosishga majbur bo‘lmasligi uchun optional:
+
+`Hands-Free Conversation`
+
+mode bo‘lsin.
+
+---
+
+# 7. PUSH-TO-TALK MODE
+
+Hands-free bilan birga traditional mode ham bo‘lsin.
+
+Katta microphone button:
+
+Hold to Talk
+
+yoki:
+
+Click → Start recording
+
+Click → Stop
+
+Keyboard shortcut:
+
+`Space`
+
+yoki Settings orqali o‘zgartiriladigan hotkey.
+
+Input field ichida Space yozishni buzmasin.
+
+---
+
+# 8. VOICE ACTIVITY DETECTION
+
+Hands-Free mode uchun:
+
+Voice Activity Detection
+
+qo‘llanilsin.
+
+App:
+
+foydalanuvchi gapirishni boshlaganini
+
+gapirishni tugatganini
+
+aniqlasin.
+
+Teacher foydalanuvchini gapining o‘rtasida bo‘lmasin.
+
+---
+
+# 9. INTERRUPT TEACHER
+
+Agar teacher juda uzoq gapirayotgan bo‘lsa, foydalanuvchi:
+
+- microphone orqali gapirishni boshlashi
+- Stop tugmasini bosishi
+- Space/Esc shortcut
+
+orqali teacher nutqini to‘xtata olsin.
+
+AI suhbatni tabiiy davom ettirsin.
+
+---
+
+# 10. MICROPHONE SETUP
+
+Speaking birinchi marta ochilganda microphone permission so‘ralishi mumkin.
+
+Professional setup:
+
+`Microphone Setup`
+
+Input device:
+
+dropdown
+
+Input level meter
+
+Noise indicator
+
+Test microphone
+
+Record 5 seconds
+
+Playback
+
+bo‘lsin.
+
+Permission rad etilgan bo‘lsa aniq ko‘rsatma ber.
+
+App crash bo‘lmasin.
+
+---
+
+# 11. INPUT DEVICE SELECTOR
+
+Agar kompyuterda:
+
+Laptop Microphone
+
+USB Microphone
+
+Bluetooth Headset
+
+boshqa miclar
+
+bo‘lsa foydalanuvchi tanlay olsin.
+
+Settings → Audio.
+
+Selected device saqlansin.
+
+---
+
+# 12. BACKGROUND NOISE WARNING
+
+Audio sifati yomon bo‘lsa:
+
+`Background noise is high. Pronunciation scores may be less accurate.`
+
+deb kichik notification chiqar.
+
+Suhbatni to‘xtatma.
+
+---
+
+# 13. TEACHER VOICES — MUHIM TALAB
+
+Teacher voice tizimi professional `Voice Registry` orqali ishlasin.
+
+Release versiyada kamida:
+
+## Female Uzbek Voices
+
+1. Female Voice 1
+2. Female Voice 2
+3. Female Voice 3
+4. Female Voice 4
+5. Female Voice 5
+
+## Male Uzbek Voices
+
+1. Male Voice 1
+2. Male Voice 2
+3. Male Voice 3
+4. Male Voice 4
+5. Male Voice 5
+
+bo‘lishi shart.
+
+Jami:
+
+**kamida 10 ta tabiiy Uzbek ovozi.**
+
+---
+
+# 14. SOXTA OVOZ YARATMA
+
+Bitta ovozni:
+
+pitch +10
+
+pitch -10
+
+qilib 5 xil deb ko‘rsatish TAQIQLANADI.
+
+5 female va 5 male:
+
+haqiqatan boshqa voice identity/model bo‘lishi kerak.
+
+Faqat:
+
+- licensed
+- legally usable
+- provider-supported
+- consented
+
+voice ishlat.
+
+Real inson ovozini ruxsatsiz clone qilma.
+
+---
+
+# 15. MULTI-PROVIDER VOICE SYSTEM
+
+Bitta TTS providerga bog‘lanib qolma.
+
+Architecture:
+
+```text
+VoiceService
+│
+├── AzureVoiceProvider
+├── UzbekVoiceProvider
+├── LocalVoiceProvider
+├── SystemVoiceProvider
+└── FutureVoiceProvider
+```
+
+kabi extensible bo‘lsin.
+
+Har bir provider common interface implement qilsin.
+
+---
+
+# 16. VOICE CAPABILITY DETECTION
+
+Har bir voice uchun metadata:
+
+```ts
+Voice {
+ id
+ provider
+ displayName
+ gender
+ languages
+ locale
+ nativeUzbek
+ supportsEnglish
+ supportsStreaming
+ supportsSpeed
+ supportsPitch
+ supportsEmotion
+ quality
+}
+```
+
+saqlansin.
+
+UI faqat haqiqatan available voice'larni ko‘rsatsin.
+
+---
+
+# 17. UZBEK VOICE QUALITY
+
+Uzbek explanationlar:
+
+tabiiy o‘zbekcha
+
+lotin yozuviga mos
+
+g‘, o‘, sh, ch kabi tovushlarni to‘g‘ri
+
+talaffuz qilishi shart.
+
+Robotik yoki ruscha aksentdagi Uzbek ovozni `native` deb ko‘rsatma.
+
+---
+
+# 18. VOICE PREVIEW
+
+Settings → Teacher → Voice
+
+ichida voice cardlar bo‘lsin.
+
+Masalan:
+
+`Madina`
+
+Female
+
+Uzbek
+
+▶ Preview
+
+Preview text:
+
+`Assalomu alaykum! Bugun ingliz tilida birga gaplashamiz.`
+
+English preview:
+
+`Hello! Let's practice English together today.`
+
+---
+
+# 19. VOICE FILTERS
+
+Voice selector:
+
+All
+
+Female
+
+Male
+
+Uzbek
+
+Bilingual
+
+Fast
+
+Natural
+
+kabi filterlarga ega bo‘lishi mumkin.
+
+Favorite ⭐ ham qo‘sh.
+
+---
+
+# 20. BILINGUAL TEACHER VOICE
+
+Teacher bir suhbatda:
+
+English
+
+va kerak bo‘lganda:
+
+Uzbek
+
+gapira olsin.
+
+Agar bitta TTS model ikkala tilni tabiiy aytolmasa:
+
+Voice Pair
+
+ishlat.
+
+Masalan:
+
+Teacher persona A
+
+English voice → English TTS
+
+Uzbek voice → Native Uzbek TTS
+
+Lekin UI'da foydalanuvchiga bu bitta teacher sifatida ko‘rinsin.
+
+Voice transition imkon qadar tabiiy bo‘lsin.
+
+---
+
+# 21. TEACHER RESPONSE LANGUAGE
+
+Settings:
+
+Teacher Support Language:
+
+Uzbek
+
+English
+
+Auto
+
+Beginner uchun:
+
+English + Uzbek help.
+
+Advanced uchun:
+
+English first.
+
+---
+
+# 22. "I DON'T UNDERSTAND" BUTTON
+
+Conversation davomida doim ko‘rinadigan kichik controls:
+
+`I don't understand`
+
+`Translate`
+
+`Say it slower`
+
+`Repeat`
+
+`Give me a hint`
+
+`How do I say this?`
+
+bo‘lsin.
+
+---
+
+# 23. HOW DO I SAY THIS?
+
+Foydalanuvchi inglizcha gapni bilmay qolsa:
+
+`How do I say this?`
+
+bosadi.
+
+Uzbek tilida yozadi yoki aytadi:
+
+`Men ertaga universitetga boraman demoqchiman.`
+
+Teacher:
+
+`I am going to university tomorrow.`
+
+yoki naturalroq:
+
+`I'm going to university tomorrow.`
+
+deb yordam beradi.
+
+Keyin:
+
+`Now you try.`
+
+deb foydalanuvchini ayttirsin.
+
+---
+
+# 24. HINT SYSTEM
+
+Agar foydalanuvchi jim qolsa yoki:
+
+`I don't know`
+
+desa:
+
+AI darhol javobni to‘liq aytib bermasin.
+
+3 bosqichli hint:
+
+Hint 1:
+
+keyword
+
+Hint 2:
+
+sentence start
+
+Hint 3:
+
+full example
+
+bo‘lsin.
+
+---
+
+# 25. CORRECTION INTENSITY
+
+Settings:
+
+`Teacher correction style`
+
+### Gentle
+Faqat juda muhim xatolarni tuzatadi.
+
+### Balanced
+Muhim grammar, vocabulary va pronunciationni tuzatadi.
+
+### Strict
+Ko‘proq xatoni ko‘rsatadi.
+
+Default:
+
+Balanced.
+
+---
+
+# 26. CONVERSATION FLOW
+
+AI har bir xatoda suhbatni to‘xtatmasin.
+
+Masalan foydalanuvchi:
+
+`Yesterday I go university.`
+
+desa teacher suhbatni tabiiy davom ettirishi mumkin.
+
+Written transcript ichida:
+
+`go`
+
+belgilansin.
+
+Lesson tugagach:
+
+❌ Yesterday I go university.
+
+✅ Yesterday I went to university.
+
+tushuntiriladi.
+
+---
+
+# 27. OPTIONAL LIVE CORRECTION
+
+Settings:
+
+Corrections:
+
+- After conversation
+- Important only
+- Real-time
+
+Foydalanuvchi o‘zi tanlasin.
+
+Default:
+
+`Important only`
+
+yoki:
+
+`After conversation`.
+
+---
+
+# 28. LIVE TRANSCRIPT
+
+Conversation davomida chat transcript chiqsin.
+
+Teacher:
+
+message
+
+User:
+
+speech transcript
+
+ko‘rinadi.
+
+User transcript xatolari rangli markerlar bilan belgilanishi mumkin.
+
+Grammar:
+
+underline.
+
+Pronunciation:
+
+different subtle indicator.
+
+Vocabulary:
+
+another indicator.
+
+Lekin interface haddan tashqari rangli bo‘lmasin.
+
+---
+
+# 29. USER TRANSCRIPT EDITING
+
+Speech-to-text noto‘g‘ri tushungan bo‘lsa:
+
+user message → Edit transcript
+
+imkoniyati bo‘lsin.
+
+AI scoring noto‘g‘ri STT natijasiga asoslanmasligi uchun original audio ham saqlanishi mumkin.
+
+---
+
+# 30. PRIVACY FOR RECORDINGS
+
+Audio recordinglar avtomatik cloudga abadiy saqlanmasin.
+
+Settings:
+
+Save recordings:
+
+- Never
+- Session only
+- Keep locally
+
+Default:
+
+Session only
+
+yoki privacy-friendly holat.
+
+Foydalanuvchi audio historyni o‘chira olsin.
+
+---
+
+# 31. LESSONS TAB
+
+Speaking Lessons:
+
+structured lesson system.
+
+Lesson flow:
+
+### LEARN
+
+Bugungi useful phrases.
+
+### PRACTICE
+
+Takrorlash va controlled speaking.
+
+### APPLY
+
+AI bilan real conversation.
+
+Bu 3 bosqichni bir-biriga bog‘la.
+
+---
+
+# 32. PERSONALIZED LESSON
+
+AI foydalanuvchining:
+
+- CEFR level
+- previous mistakes
+- saved vocabulary
+- weak grammar
+- speaking goals
+
+asosida lesson yaratishi mumkin.
+
+Masalan:
+
+`Today: Talking about yesterday`
+
+Maqsad:
+
+Past Simple.
+
+---
+
+# 33. DAILY SPEAKING LESSON
+
+Home'da:
+
+`Today's Speaking`
+
+bo‘lsin.
+
+Misol:
+
+Topic:
+
+`My Day`
+
+Target:
+
+5–10 minutes
+
+Phrases:
+
+3
+
+Conversation:
+
+1
+
+Review:
+
+1
+
+---
+
+# 34. ROLE PLAY
+
+Role Play alohida kuchli tab bo‘lsin.
+
+Categories:
+
+Daily Life
+
+Travel
+
+Education
+
+Work
+
+Technology
+
+Social
+
+Shopping
+
+Restaurant
+
+Hotel
+
+Airport
+
+University
+
+Doctor / basic everyday communication
+
+Job Interview
+
+Business Meeting
+
+Presentation
+
+Phone Call
+
+Custom
+
+---
+
+# 35. ROLE PLAY SCENARIO
+
+Masalan:
+
+`Ordering Food`
+
+AI:
+
+Waiter.
+
+User:
+
+Customer.
+
+Teacher VRM shu rolga mos conversation qiladi.
+
+AI scriptni yoddan takrorlamasin.
+
+User nima desa shunga moslashsin.
+
+---
+
+# 36. ROLE PLAY DIFFICULTY
+
+Difficulty:
+
+Easy
+
+Normal
+
+Hard
+
+Realistic
+
+Easy:
+
+teacher ko‘proq yordam beradi.
+
+Realistic:
+
+real hayotdagidek conversation.
+
+---
+
+# 37. CUSTOM ROLE PLAY
+
+Foydalanuvchi yozishi mumkin:
+
+`Tomorrow I have a university presentation. Practice questions with me.`
+
+AI avtomatik custom scenario yaratsin.
+
+---
+
+# 38. ROLE PLAY GOAL
+
+Scenario boshlanishidan oldin:
+
+Situation
+
+Your role
+
+Teacher role
+
+Goal
+
+Useful phrases
+
+ko‘rsat.
+
+Masalan:
+
+Goal:
+
+`Order a meal and ask about the price.`
+
+---
+
+# 39. ROLE PLAY NATURAL EVENTS
+
+Conversation har safar aynan bir xil bo‘lmasin.
+
+AI scenario ichida small random variations ishlatsin.
+
+Masalan airport:
+
+gate change
+
+seat question
+
+luggage question
+
+kabi.
+
+Lekin levelga mos bo‘lsin.
+
+---
+
+# 40. PRONUNCIATION TAB
+
+Pronunciation bo‘limi professional bo‘lsin.
+
+Subsections:
+
+Words
+
+Sentences
+
+Sounds
+
+Minimal Pairs
+
+My Difficult Words
+
+Free Speech
+
+---
+
+# 41. PRONUNCIATION SCORE
+
+Faqat bitta umumiy score bermagin.
+
+Imkoniyat bo‘lsa:
+
+Overall
+
+Accuracy
+
+Fluency
+
+Completeness
+
+Prosody
+
+Stress
+
+Rhythm
+
+Intonation
+
+kabi resultlar.
+
+Provider qaysi metricni bermasa uni fake hisoblama.
+
+---
+
+# 42. PROVIDER CAPABILITY SYSTEM
+
+Pronunciation service abstraction:
+
+```ts
+PronunciationProvider {
+ assessScripted()
+ assessFreeSpeech()
+ getWordScores()
+ getPhonemeScores()
+ getSupportedMetrics()
+}
+```
+
+UI provider bermaydigan metricni yashirsin.
+
+Soxta AI foiz chiqarma.
+
+---
+
+# 43. WORD-LEVEL FEEDBACK
+
+Masalan sentence:
+
+`I would like a cup of coffee.`
+
+Natijada:
+
+I — 95
+
+would — 71
+
+like — 92
+
+coffee — 63
+
+kabi word level natija ko‘rsatish mumkin.
+
+Faqat real assessment provider data mavjud bo‘lsa.
+
+---
+
+# 44. PHONEME FEEDBACK
+
+Agar provider support qilsa:
+
+word → syllable → phoneme
+
+darajasigacha ko‘rsat.
+
+Misol:
+
+`think`
+
+/θɪŋk/
+
+muammo:
+
+`θ`
+
+Teacher simple Uzbek explanation bersin.
+
+---
+
+# 45. MOUTH / ARTICULATION HELP
+
+Difficult sound uchun:
+
+- tongue placement
+- lips
+- airflow
+
+haqida qisqa, xavfsiz visual/text explanation ber.
+
+Keraksiz lingvistik murakkab terminlar bilan to‘ldirma.
+
+---
+
+# 46. MINIMAL PAIRS
+
+Mashqlar:
+
+ship / sheep
+
+live / leave
+
+think / sink
+
+walk / work
+
+kabi.
+
+Teacher:
+
+word A
+
+word B
+
+aytib beradi.
+
+User takrorlaydi.
+
+---
+
+# 47. LISTEN AND REPEAT
+
+Teacher sentence aytadi.
+
+User takrorlaydi.
+
+App:
+
+reference
+
+user transcript
+
+pronunciation score
+
+comparison
+
+ko‘rsatadi.
+
+Repeat unlimited bo‘lsin.
+
+---
+
+# 48. SHADOWING TAB
+
+Teacher yoki selected audio bilan shadowing.
+
+Workflow:
+
+Listen
+
+↓
+
+Listen slowly
+
+↓
+
+Repeat
+
+↓
+
+Shadow with teacher
+
+↓
+
+Record yourself
+
+↓
+
+Compare
+
+---
+
+# 49. SHADOWING MODES
+
+Beginner:
+
+sentence-by-sentence.
+
+Intermediate:
+
+short paragraph.
+
+Advanced:
+
+continuous speech.
+
+---
+
+# 50. SHADOWING SPEED
+
+0.5x
+
+0.75x
+
+0.9x
+
+1x
+
+1.1x
+
+1.25x
+
+Speed ovozni iloji boricha buzmasin.
+
+---
+
+# 51. SHADOWING TEXT HIGHLIGHT
+
+Audio ketayotganda currently spoken:
+
+word
+
+yoki sentence
+
+highlight bo‘lsin.
+
+Reading module'dagi text engine bilan imkon qadar reuse qil.
+
+---
+
+# 52. READ & TALK
+
+Reading va Speaking alohida orollar bo‘lmasin.
+
+Reading’da tugatilgan matndan:
+
+`Discuss with Teacher`
+
+buttoni bo‘lsin.
+
+Bosilganda Speaking → Read & Talk ochilsin.
+
+AI aynan o‘sha matnni context sifatida olsin.
+
+---
+
+# 53. READ & TALK QUESTIONS
+
+Teacher matn asosida:
+
+`What do you think about...?`
+
+`Why did...?`
+
+`Do you agree...?`
+
+kabi real conversation boshlasin.
+
+Bu test emas.
+
+Natural discussion bo‘lsin.
+
+---
+
+# 54. READING SAVED WORDS → SPEAKING
+
+Reading'da saqlangan My Words Speaking'da ishlatilsin.
+
+AI vaqti-vaqti bilan:
+
+`Try to use "improve" in your answer.`
+
+kabi challenge bersin.
+
+Shunda Reading vocabulary → Speaking active vocabulary'ga o‘tadi.
+
+---
+
+# 55. MY WORDS INTEGRATION
+
+Conversation tugagach:
+
+Words you used
+
+New words
+
+Saved words used
+
+Unused target words
+
+ko‘rsat.
+
+---
+
+# 56. ACTIVE VOCABULARY
+
+Word status:
+
+Seen
+
+Understood
+
+Practiced
+
+Used in speech
+
+Mastered
+
+kabi progress modelga ega bo‘lsin.
+
+Faqat wordni bir marta ishlatgani uchun `Mastered` demasin.
+
+---
+
+# 57. NATURAL PHRASES
+
+AI foydalanuvchining grammatik jihatdan to‘g‘ri, ammo g‘alati gaplarini ham aniqlasin.
+
+Masalan:
+
+`I very like programming.`
+
+Correction.
+
+Yoki formal/textbook sentence bo‘lsa:
+
+`More natural: ...`
+
+kartasi.
+
+---
+
+# 58. "SAY IT NATURALLY"
+
+Har correction cardda:
+
+Your sentence
+
+Correct sentence
+
+More natural version
+
+Explanation
+
+bo‘lishi mumkin.
+
+---
+
+# 59. SPEAKING ANALYSIS
+
+Session tugagach katta report chiqsin.
+
+### Session Summary
+
+Speaking time
+
+User talking time
+
+Teacher talking time
+
+Words spoken
+
+Unique words
+
+Average response length
+
+Longest response
+
+Pauses
+
+Grammar corrections
+
+Pronunciation issues
+
+New vocabulary
+
+---
+
+# 60. MAIN SCORES
+
+Report:
+
+Fluency
+
+Pronunciation
+
+Grammar
+
+Vocabulary
+
+Confidence/Conversation consistency
+
+kabi bo‘lishi mumkin.
+
+Lekin faqat reliable data bo‘yicha score chiqar.
+
+`Confidence`ni mikrofon ovozi balandligiga qarab psixologik holat sifatida talqin qilma.
+
+---
+
+# 61. FLUENCY ANALYSIS
+
+Fluency:
+
+speech rate
+
+pause frequency
+
+long pauses
+
+filler words
+
+self-corrections
+
+sentence continuity
+
+kabi measurable signallarga qarasin.
+
+---
+
+# 62. FILLER WORDS
+
+Aniqlash:
+
+uh
+
+um
+
+you know
+
+like
+
+va haddan tashqari repeat.
+
+Report:
+
+`You used "um" 7 times.`
+
+Lekin foydalanuvchini uyaltiradigan wording ishlatma.
+
+---
+
+# 63. GRAMMAR REPORT
+
+Top 3 grammar issues:
+
+Past Simple
+
+Articles
+
+Prepositions
+
+kabi.
+
+Har birida:
+
+mistake
+
+correction
+
+short explanation
+
+practice
+
+bo‘lsin.
+
+---
+
+# 64. PRONUNCIATION REPORT
+
+Top difficult words:
+
+comfortable
+
+world
+
+thought
+
+kabi.
+
+Har word uchun:
+
+🔊 Teacher pronunciation
+
+🎤 Try again
+
+IPA
+
+score
+
+tips
+
+bo‘lishi mumkin.
+
+---
+
+# 65. KEY TAKEAWAY
+
+Har session oxirida 20 ta correction tashlama.
+
+Birinchi card:
+
+`Your most important improvement`
+
+bo‘lsin.
+
+Masalan:
+
+`Focus on Past Simple when talking about yesterday.`
+
+Keyin qolgan corrections expandable.
+
+---
+
+# 66. REPEAT CORRECTION
+
+Correction:
+
+❌ Yesterday I go to university.
+
+✅ Yesterday I went to university.
+
+Pastida:
+
+`Practice this`
+
+Teacher correct sentence'ni aytadi.
+
+User qayta aytadi.
+
+---
+
+# 67. MISTAKE MEMORY
+
+Speaking xatolari global:
+
+`MistakeMemory`
+
+ga yozilsin.
+
+Fields:
+
+```ts
+{
+ category
+ original
+ corrected
+ explanation
+ date
+ context
+ frequency
+ lastPracticed
+ mastery
+}
+```
+
+---
+
+# 68. REPEATED MISTAKES
+
+Bir xil xato takrorlansa:
+
+AI bilsin.
+
+Masalan:
+
+Past Simple error:
+
+7 times.
+
+Keyingi Daily Lesson shu xatoga moslashtirilsin.
+
+---
+
+# 69. DO NOT OVERCORRECT
+
+Bir xil xatoni 20 marta database'ga alohida duplicate qilib tashlama.
+
+Normalize/group qil.
+
+---
+
+# 70. PERSONAL SPEAKING PLAN
+
+AI foydalanuvchining progressidan:
+
+Weekly Focus
+
+yaratsin.
+
+Masalan:
+
+This week:
+
+1. Past tense
+2. Longer answers
+3. /θ/ sound
+4. Travel vocabulary
+
+---
+
+# 71. LEVEL ADAPTATION
+
+Teacher CEFR:
+
+Pre-A1
+
+A1
+
+A2
+
+B1
+
+B2
+
+C1
+
+C2
+
+darajaga mos gapirsin.
+
+Beginner bilan C1 vocabulary ishlatmasin.
+
+---
+
+# 72. AUTO LEVEL ESTIMATION
+
+Speaking sessiyalariga qarab level suggestion berish mumkin.
+
+Lekin bir conversation asosida levelni keskin o‘zgartirma.
+
+Trend va bir nechta session ishlat.
+
+---
+
+# 73. LONGER ANSWER COACH
+
+Agar user doim:
+
+Yes.
+
+No.
+
+Good.
+
+desa:
+
+teacher:
+
+`Can you tell me why?`
+
+`Give me one example.`
+
+kabi prompts bilan longer answersga undasin.
+
+---
+
+# 74. CONVERSATION TOPICS
+
+Topic library:
+
+Daily Life
+
+Family
+
+Friends
+
+University
+
+Technology
+
+Programming
+
+Travel
+
+Food
+
+Movies
+
+Games
+
+Sports
+
+Future Plans
+
+Education
+
+Work
+
+Business
+
+Science
+
+Social Media
+
+Culture
+
+Environment
+
+Random
+
+Custom
+
+---
+
+# 75. TOPIC DIFFICULTY
+
+Topiclar level bo‘yicha filterlansin.
+
+A1 topic:
+
+My day.
+
+B1:
+
+Technology in education.
+
+B2:
+
+Advantages and disadvantages of AI.
+
+C1:
+
+Complex social/professional discussion.
+
+---
+
+# 76. TOPIC CHANGER
+
+Conversation davomida:
+
+`Change topic`
+
+button.
+
+AI conversationni tabiiy yakunlab keyingi topicga o‘tsin.
+
+---
+
+# 77. RANDOM TOPIC
+
+`Surprise me`
+
+button qo‘sh.
+
+---
+
+# 78. QUESTION MODE
+
+Foydalanuvchi teacherga ham istalgan savol bera olsin.
+
+AI faqat interviewer bo‘lib qolmasin.
+
+Natural two-way conversation bo‘lsin.
+
+---
+
+# 79. INTERVIEW COACH
+
+Speaking ichida advanced scenario sifatida:
+
+`Interview Coach`
+
+bo‘lsin.
+
+Modes:
+
+University
+
+Internship
+
+IT job
+
+General job
+
+Custom.
+
+---
+
+# 80. INTERVIEW WORKFLOW
+
+AI:
+
+1 savol beradi.
+
+User javob beradi.
+
+Interview davom etadi.
+
+Oxirida:
+
+English quality
+
+clarity
+
+answer structure
+
+grammar
+
+vocabulary
+
+pronunciation
+
+bo‘yicha feedback.
+
+---
+
+# 81. PRESENTATION COACH
+
+Foydalanuvchi:
+
+Topic
+
+yoki presentation text
+
+beradi.
+
+Record presentation.
+
+App:
+
+pace
+
+pauses
+
+pronunciation
+
+repeated filler words
+
+grammar
+
+timing
+
+bo‘yicha analysis qiladi.
+
+---
+
+# 82. PRESENTATION TIMER
+
+1 min
+
+3 min
+
+5 min
+
+10 min
+
+Custom.
+
+---
+
+# 83. FREE SPEAKING RECORD
+
+`Speak for 1 minute`
+
+challenge.
+
+Topic chiqadi.
+
+Preparation:
+
+15 sec optional.
+
+User 60 sec gapiradi.
+
+Keyin report.
+
+---
+
+# 84. DAILY CHALLENGES
+
+Misol:
+
+### 3 Minute Talk
+Talk about your day.
+
+### No Uzbek Challenge
+Speak only English for 5 minutes.
+
+### Use 5 New Words
+Use saved vocabulary.
+
+### Story Challenge
+Tell a short story.
+
+### Describe
+Describe an object or image.
+
+---
+
+# 85. STREAK
+
+Speaking streak bo‘lsin.
+
+Ammo app foydalanuvchini majburlamasin.
+
+Streak yo‘qolsa tahdidga o‘xshash message chiqarma.
+
+---
+
+# 86. GOAL SETTING
+
+Daily goal:
+
+5 min
+
+10 min
+
+15 min
+
+20 min
+
+30 min
+
+Custom.
+
+---
+
+# 87. SESSION LENGTH
+
+Quick:
+
+5 min.
+
+Standard:
+
+10–15 min.
+
+Deep:
+
+20–30 min.
+
+Unlimited:
+
+manual stop.
+
+---
+
+# 88. SMART SESSION ENDING
+
+Conversation tugashidan oldin teacher:
+
+`One last question...`
+
+deb natural yakunlasin.
+
+So‘ng report.
+
+---
+
+# 89. VRM SPEAKING ANIMATIONS
+
+Teacher Speaking mode'da:
+
+idle
+
+listen
+
+thinking
+
+speaking
+
+happy
+
+encouraging
+
+explain
+
+nod
+
+confused
+
+celebrate subtle
+
+animation statesga ega bo‘lsin.
+
+---
+
+# 90. LISTENING ANIMATION
+
+User gapirayotganda VRM:
+
+teacher speaking animationni to‘xtatsin.
+
+Listening pose.
+
+Eye contact.
+
+Occasional natural nod.
+
+Teacher foydalanuvchi gapirayotganida tasodifiy katta gesture qilmasin.
+
+---
+
+# 91. LIP SYNC
+
+TTS audio asosida:
+
+mouth movement / viseme
+
+ishlasin.
+
+Agar provider viseme bermasa audio amplitude fallback ishlatish mumkin.
+
+Lip sync performance'ni buzmasin.
+
+---
+
+# 92. FACIAL EXPRESSIONS
+
+AI answer metadata:
+
+neutral
+
+happy
+
+encouraging
+
+thinking
+
+surprised
+
+serious
+
+kabi safe emotion tag bera olsin.
+
+VRM shu expressionni subtle ishlatsin.
+
+---
+
+# 93. NO CARTOON OVERREACTION
+
+Teacher har bir correct answerga sakrab ketmasin.
+
+Professional, natural behavior.
+
+---
+
+# 94. CAMERA
+
+Speaking uchun camera majburiy EMAS.
+
+Optional camera features keyinchalik mavjud bo‘lishi mumkin.
+
+Default OFF.
+
+User explicit yoqmasa camera ishlamasin.
+
+---
+
+# 95. TEACHER PERSONALITY
+
+Settings:
+
+Friendly
+
+Calm
+
+Professional
+
+Energetic
+
+Patient
+
+Custom
+
+Correction intensity personality'dan alohida boshqarilsin.
+
+---
+
+# 96. TEACHER MEMORY
+
+Teacher quyidagilarni eslab qolishi mumkin:
+
+User preferred name
+
+English level
+
+learning goal
+
+recent lesson
+
+common mistakes
+
+saved vocabulary
+
+conversation topics already practiced
+
+progress
+
+Lekin keraksiz shaxsiy ma’lumot yig‘ma.
+
+---
+
+# 97. CONVERSATION CONTEXT
+
+Teacher:
+
+hozirgi conversation
+
+bugungi lesson
+
+user level
+
+selected topic
+
+target grammar
+
+target vocabulary
+
+oldingi relevant mistakes
+
+contextini olsin.
+
+Butun database'ni har requestda promptga yuborma.
+
+Relevant retrieval ishlat.
+
+---
+
+# 98. AI PROMPT LAYER
+
+AI service'ga system prompt architecture:
+
+Teacher Core
+
+↓
+
+User Level
+
+↓
+
+Lesson Goal
+
+↓
+
+Conversation Mode
+
+↓
+
+Relevant Memory
+
+↓
+
+Recent Messages
+
+kabi modular bo‘lsin.
+
+Bitta 10 000 qator prompt qilma.
+
+---
+
+# 99. API MANAGER — OLDINGI TIZIMNI ISHLAT
+
+Reading bosqichidagi API managerni qayta yaratma.
+
+Global Provider Manager ishlat.
+
+User oldin kiritgan:
+
+1–10 API key
+
+Speaking'da ham ishlasin.
+
+---
+
+# 100. PROVIDER SEPARATION
+
+LLM API
+
+STT API
+
+TTS API
+
+Pronunciation Assessment API
+
+bir xil servis emasligini architecture tushunsin.
+
+Settings ichida:
+
+AI
+
+Speech Recognition
+
+Voice
+
+Pronunciation
+
+providerlarni alohida konfiguratsiya qilish mumkin bo‘lsin.
+
+---
+
+# 101. API FALLBACK
+
+LLM Primary fail →
+
+backup key/provider.
+
+TTS Primary fail →
+
+available fallback.
+
+STT fail →
+
+retry/fallback.
+
+Lekin provider almashtirish conversationni yo‘qotmasin.
+
+---
+
+# 102. RATE LIMIT HANDLING
+
+429 / quota / timeout:
+
+silent infinite retry qilma.
+
+Exponential retry.
+
+Key rotation.
+
+Notification.
+
+---
+
+# 103. API KEY SECURITY
+
+API keylar:
+
+React bundle
+
+console.log
+
+GitHub
+
+plain localStorage
+
+ichida ko‘rinmasin.
+
+Electron secure credential storage ishlat.
+
+Renderer to‘g‘ridan-to‘g‘ri secretga access qilmasin.
+
+IPC security qoidalariga rioya qil.
+
+---
+
+# 104. VOICE PROVIDER KEY
+
+TTS provider uchun kerak bo‘lsa:
+
+Settings → Voice Providers.
+
+API key test.
+
+Status.
+
+Quota indicator agar API mavjud bo‘lsa.
+
+---
+
+# 105. PRONUNCIATION PROVIDER KEY
+
+Pronunciation API alohida key talab qilsa:
+
+same secure manager.
+
+---
+
+# 106. OFFLINE FALLBACK
+
+Internet bo‘lmasa:
+
+- oldingi conversation history
+- review
+- locally saved audio
+- saved mistakes
+- saved vocabulary
+- OS TTS
+- local STT agar mavjud
+
+ishlashi mumkin.
+
+AI conversation unavailable bo‘lsa aniq xabar ber.
+
+---
+
+# 107. LOW LATENCY
+
+Speaking app uchun latency juda muhim.
+
+Pipeline optimizatsiya qil:
+
+streaming STT
+
+streaming AI response
+
+streaming TTS
+
+provider support qilsa ishlat.
+
+Teacher 8–10 soniya jim turib qolmasin.
+
+---
+
+# 108. RESPONSE LENGTH CONTROL
+
+AI teacher odatda userdan uzoq gapirmasin.
+
+User speaking practice qilishi kerak.
+
+Default target:
+
+Teacher 30–40%
+
+User 60–70%
+
+conversation time.
+
+---
+
+# 109. "TEACHER TALKS TOO MUCH"
+
+Agar teacher/user ratio juda oshsa internal logic answerlarni qisqartirsin.
+
+---
+
+# 110. SPEAKING SPEED
+
+Teacher speed:
+
+Very Slow
+
+Slow
+
+Normal
+
+Natural
+
+Fast
+
+yoki slider.
+
+---
+
+# 111. AUTO SPEED
+
+Optional:
+
+`Adaptive speed`
+
+User level va comprehension asosida.
+
+A1 → slow.
+
+B2 → natural.
+
+---
+
+# 112. REPEAT / SLOWER
+
+Har teacher message ostida:
+
+🔊 Replay
+
+🐢 Slower
+
+🌐 Translate
+
+📖 Explain
+
+⭐ Save phrase
+
+bo‘lsin.
+
+---
+
+# 113. RIGHT CLICK SUPPORT
+
+Transcript'dagi teacher yoki user word ustiga right-click:
+
+Pronounce
+
+Translate
+
+Explain
+
+Examples
+
+Save Word
+
+Ask Teacher
+
+Add Note
+
+kabi Reading bilan bir xil context menu ishlasin.
+
+Reading component logicni reuse qil.
+
+---
+
+# 114. PHRASE SELECTION
+
+Transcript'dan phrase select qilinsa:
+
+Translate
+
+Save Phrase
+
+Practice
+
+Pronounce
+
+Explain Grammar
+
+ishlasin.
+
+---
+
+# 115. KEYBOARD SHORTCUTS
+
+Speaking shortcuts:
+
+Space → push-to-talk / pause according to mode
+
+Esc → stop teacher / close modal
+
+R → repeat teacher sentence
+
+S → slower replay
+
+T → translate selected teacher response
+
+Ctrl+M → mute/unmute
+
+Ctrl+Shift+M → microphone selector
+
+Ctrl+, → Settings
+
+Shortcut manager central bo‘lsin.
+
+Input fieldda typingga halaqit bermasin.
+
+---
+
+# 116. ACCESSIBILITY
+
+Controls keyboard bilan boshqarilsin.
+
+Tooltips bo‘lsin.
+
+Focus indicator bo‘lsin.
+
+Text scale ishlasin.
+
+Audio-only foydalanuvchiga ham transcript mavjud.
+
+---
+
+# 117. REVIEW TAB
+
+Speaking → Review ichida:
+
+Today's corrections
+
+Pronunciation
+
+Grammar
+
+Vocabulary
+
+Saved phrases
+
+Recordings
+
+Previous sessions
+
+Difficult words
+
+bo‘limlari.
+
+---
+
+# 118. SESSION HISTORY
+
+Har session:
+
+date
+
+mode
+
+topic
+
+duration
+
+level
+
+scores
+
+corrections count
+
+words practiced
+
+audio reference if saved
+
+saqlansin.
+
+---
+
+# 119. SESSION REPLAY
+
+Agar user recordingsni saqlashni tanlagan bo‘lsa:
+
+conversation replay.
+
+User audio
+
+teacher audio/text
+
+transcript sync.
+
+---
+
+# 120. COMPARE RECORDINGS
+
+User bir sentence'ni bir necha marta aytsa:
+
+Attempt 1
+
+Attempt 2
+
+Attempt 3
+
+score trendini ko‘rsat.
+
+---
+
+# 121. PROGRESS
+
+Speaking Progress:
+
+minutes spoken
+
+sessions
+
+words spoken
+
+topics completed
+
+fluency trend
+
+pronunciation trend
+
+grammar trend
+
+vocabulary trend
+
+active vocabulary
+
+---
+
+# 122. PROGRESS CHART
+
+Weekly / Monthly.
+
+Bitta past score sabab katta level pasayishi ko‘rsatma.
+
+Moving average/trend ishlat.
+
+---
+
+# 123. PERSONAL BEST
+
+Masalan:
+
+Longest English conversation:
+
+18 min
+
+Highest fluency:
+
+82
+
+Most words in session:
+
+624
+
+kabi optional achievements.
+
+---
+
+# 124. ACHIEVEMENTS
+
+Achievements bo‘lishi mumkin:
+
+First 5-minute talk
+
+10 conversations
+
+50 new words used
+
+7-day speaking practice
+
+First role play
+
+Lekin gamification asosiy learningni bosib ketmasin.
+
+---
+
+# 125. DAILY REVIEW
+
+App Speaking Home'da:
+
+`Review 3 mistakes`
+
+kabi small card.
+
+Oldingi xatolardan mini speaking practice.
+
+---
+
+# 126. SMART REVIEW
+
+Spaced repetitionga o‘xshash logic:
+
+Recent mistake
+
+↓
+
+practice after some time
+
+↓
+
+correct repeated use
+
+↓
+
+lower priority
+
+↓
+
+mastered
+
+---
+
+# 127. USER FEEDBACK BUTTON
+
+AI correction noto‘g‘ri bo‘lsa:
+
+`This correction is wrong`
+
+yoki:
+
+👍 / 👎
+
+feedback.
+
+AI tizimi noto‘g‘ri correctionni blindly mastery database'ga yozmasin.
+
+---
+
+# 128. NO FAKE CERTAINTY
+
+Speech recognition noaniq bo‘lsa:
+
+`I'm not sure I heard that correctly.`
+
+deb ko‘rsatishi mumkin.
+
+STT confidence past bo‘lsa pronunciationni qat'iy baholama.
+
+---
+
+# 129. FIRST SPEAKING ONBOARDING
+
+Speaking birinchi ochilganda 1 daqiqalik setup:
+
+1. Choose goal
+2. Choose preferred teacher voice
+3. Test microphone
+4. Choose correction style
+5. Start first conversation
+
+Reading onboardingni takrorlama.
+
+---
+
+# 130. GOALS
+
+Speaking goal:
+
+Daily Conversation
+
+University
+
+Travel
+
+Job
+
+Programming / Tech
+
+IELTS-style speaking practice
+
+Pronunciation
+
+Confidence
+
+Custom.
+
+---
+
+# 131. IELTS-LIKE PRACTICE
+
+Keyinchalik exam practice qo‘shishga tayyor architecture.
+
+Lekin rasmiy IELTS score'ini guarantee qilma.
+
+UI:
+
+`Practice estimate`
+
+deb aniq belgilansin.
+
+---
+
+# 132. BEGINNER RESCUE MODE
+
+A1 user umuman javob bera olmasa:
+
+teacher Uzbek tilida qisqa yordam beradi.
+
+Masalan:
+
+`"Men talabaman" inglizchada "I am a student." Endi o‘zing aytib ko‘r.`
+
+Keyin darhol userga speaking imkoniyatini qaytar.
+
+---
+
+# 133. TRANSLATION DEPENDENCYNI KAMAYTIR
+
+User rivojlangani sayin Uzbek yordam asta kamayishi mumkin.
+
+A1:
+
+ko‘proq help.
+
+A2:
+
+moderate.
+
+B1+:
+
+English-first.
+
+Setting bilan o‘zgartirish mumkin.
+
+---
+
+# 134. SPEAKING WITHOUT FEAR MODE
+
+`Practice privately`
+
+mode.
+
+No live score during conversation.
+
+Faqat session oxirida feedback.
+
+Bu foydalanuvchining conversation flowini buzmaydi.
+
+---
+
+# 135. FOCUS MODE
+
+Speaking Focus Mode:
+
+sidebar collapse.
+
+Faqat:
+
+VRM Teacher
+
+conversation
+
+microphone
+
+essential controls.
+
+---
+
+# 136. MINI MODE
+
+Optional compact desktop window:
+
+VRM face
+
+mic
+
+conversation status
+
+timer.
+
+Full appni ochmasdan speaking qilish uchun.
+
+Architecture tayyor qoldir.
+
+---
+
+# 137. WINDOW RESIZE
+
+VRM va transcript resize bo‘lganda bir-birini yopmasin.
+
+Minimum dimensions.
+
+Responsive desktop layout.
+
+---
+
+# 138. DESIGN
+
+Speaking screen zamonaviy premium desktop AI tutor ko‘rinishida bo‘lsin.
+
+Keraksiz neonlardan qoch.
+
+Main visual hierarchy:
+
+Teacher
+
+Conversation
+
+Mic
+
+Context tools
+
+Progress.
+
+---
+
+# 139. SPEAKING UI LAYOUT
+
+Desktop large screen:
+
+Left:
+
+navigation / lesson info.
+
+Center:
+
+VRM Teacher + conversation.
+
+Right:
+
+session goal / vocabulary / corrections.
+
+Bottom:
+
+microphone + quick assistance controls.
+
+Focus Mode:
+
+Center only.
+
+---
+
+# 140. RECORDING INDICATOR
+
+Mic recordingda:
+
+clear visual indicator.
+
+Timer.
+
+Audio waveform / subtle level visualization.
+
+Foydalanuvchi mic ishlayotganini aniq bilsin.
+
+---
+
+# 141. PRIVACY INDICATOR
+
+Microphone active:
+
+visible indicator.
+
+Microphone inactive:
+
+app backgroundda yashirin recording qilmasin.
+
+---
+
+# 142. CONVERSATION STATES
+
+State machine ishlat:
+
+idle
+
+preparing
+
+listening
+
+processing
+
+thinking
+
+speaking
+
+paused
+
+review
+
+error.
+
+Async race conditionlarni oldini ol.
+
+---
+
+# 143. TEACHER INTERRUPTION STATE
+
+User teacher gapirayotganda gapirsa:
+
+current TTS cancel.
+
+audio cleanup.
+
+new user turn.
+
+Oldingi TTS audio overlap qilmasin.
+
+---
+
+# 144. ERROR HANDLING
+
+Mic unavailable
+
+STT unavailable
+
+AI timeout
+
+TTS failure
+
+pronunciation provider failure
+
+VRM load failure
+
+har biri alohida graceful error.
+
+Appni crash qildirma.
+
+---
+
+# 145. PARTIAL FAILURE
+
+Pronunciation API ishlamasa ham conversation ishlasin.
+
+VRM ishlamasa teacher audio/text ishlasin.
+
+TTS ishlamasa text conversation ishlasin.
+
+Bitta servis yiqilsa butun Speaking modul yiqilmasin.
+
+---
+
+# 146. CACHE
+
+Frequently used TTS:
+
+common phrases
+
+lesson instructions
+
+imkon qadar cache qilinishi mumkin.
+
+API xarajat va latency kamayadi.
+
+---
+
+# 147. DATABASE ENTITIES
+
+Speaking uchun:
+
+SpeakingSession
+
+ConversationTurn
+
+AudioRecording
+
+PronunciationAssessment
+
+Correction
+
+Mistake
+
+SpeakingGoal
+
+RolePlayScenario
+
+SpeakingLesson
+
+VoicePreference
+
+ChallengeProgress
+
+SpeakingProgress
+
+jadvallari/entitylari.
+
+---
+
+# 148. AUDIO FILE MANAGEMENT
+
+Local recordings:
+
+unique safe IDs.
+
+Database metadata.
+
+Orphan files cleanup.
+
+User delete.
+
+Storage usage indicator.
+
+---
+
+# 149. DATA EXPORT
+
+User:
+
+progress
+
+mistakes
+
+saved words
+
+session summaries
+
+ni export qila olishi mumkin.
+
+JSON / CSV kabi.
+
+Audio export faqat user saqlagan recordings uchun.
+
+---
+
+# 150. CLEAR DATA
+
+Settings:
+
+Clear Speaking History
+
+Clear Recordings
+
+Clear Scores
+
+Reset Speaking Progress
+
+Separate options.
+
+Tasodifan delete bo‘lmasligi uchun confirmation.
+
+---
+
+# 151. CROSS-MODULE INTEGRATION
+
+Reading → Speaking:
+
+Discuss this text.
+
+Speaking → My Words:
+
+save vocabulary.
+
+Speaking → Writing future:
+
+Use this conversation as writing topic.
+
+Global teacher barcha modullarda bir xil.
+
+---
+
+# 152. HOME DASHBOARD INTEGRATION
+
+Main Home'da:
+
+Continue Reading
+
+Start Speaking
+
+Today's Speaking Goal
+
+Review Mistakes
+
+kabi cards.
+
+---
+
+# 153. NOTIFICATION / REMINDER ARCHITECTURE
+
+Daily practice reminders optional.
+
+Default aggressive notification qilma.
+
+User o‘zi enable qilsin.
+
+---
+
+# 154. NO PLACEHOLDER FUNCTIONALITY
+
+Button mavjud bo‘lsa real ishlasin.
+
+Agar feature hali implement qilinmagan bo‘lsa:
+
+hidden
+
+yoki aniq:
+
+`Coming later`
+
+deb ko‘rsat.
+
+Fake score.
+
+Fake microphone.
+
+Fake AI.
+
+Fake pronunciation analysis
+
+qilma.
+
+---
+
+# 155. PERFORMANCE
+
+VRM rendering
+
+STT
+
+TTS
+
+audio processing
+
+AI requests
+
+UI
+
+bir-birini bloklamasin.
+
+Main UI smooth qolishi kerak.
+
+Web workers / processes kerak bo‘lsa ishlat.
+
+---
+
+# 156. RESOURCE USAGE
+
+Speaking yopilganda:
+
+unused microphone stream
+
+audio context
+
+listeners
+
+timers
+
+VRM unnecessary processes
+
+tozalansin.
+
+Memory leak bo‘lmasin.
+
+---
+
+# 157. TESTING
+
+Unit tests:
+
+provider switching
+
+mistake grouping
+
+voice selection
+
+session calculations.
+
+Integration tests:
+
+mic → STT
+
+STT → LLM
+
+LLM → TTS
+
+TTS → VRM.
+
+Error tests:
+
+provider failover.
+
+---
+
+# 158. FIRST RELEASE PRIORITY
+
+Bir vaqtning o‘zida barcha 150 funksiyani yarimta qilib tashlama.
+
+Avval production-quality core:
+
+1. Global VRM teacher
+2. Voice registry
+3. Uzbek + English TTS
+4. Microphone
+5. STT
+6. AI conversation
+7. Conversation transcript
+8. Correction system
+9. Speaking report
+10. Role Play
+11. Pronunciation
+12. Mistake memory
+13. Progress
+14. Review
+
+to‘liq ishlasin.
+
+Keyin advanced features.
+
+---
+
+# 159. DEVELOPMENT PHASES
+
+## Phase A — Speaking Core
+
+Microphone
+
+STT
+
+AI conversation
+
+TTS
+
+VRM lip-sync
+
+transcript.
+
+## Phase B — Learning Intelligence
+
+corrections
+
+mistakes
+
+user level
+
+adaptive teacher
+
+session reports.
+
+## Phase C — Practice Modes
+
+Lessons
+
+Role Play
+
+Pronunciation
+
+Shadowing
+
+Read & Talk.
+
+## Phase D — Advanced Coaching
+
+Interview
+
+Presentation
+
+Challenges
+
+smart review.
+
+---
+
+# 160. USER EXPERIENCE TARGET
+
+User appni ochadi.
+
+Speaking.
+
+Start Conversation.
+
+Teacher VRM:
+
+`Hi! Ready to practice English?`
+
+User tabiiy gapiradi.
+
+Teacher javob beradi.
+
+User bilmagan gapida:
+
+`How do I say this?`
+
+bosadi.
+
+Uzbekcha aytadi.
+
+Teacher yordam beradi.
+
+Conversation davom etadi.
+
+Session tugaydi.
+
+App:
+
+eng muhim xatolarni
+
+pronunciationni
+
+grammarni
+
+vocabularyni
+
+progressni
+
+ko‘rsatadi.
+
+User 2–3 ta correctionni qayta ovoz chiqarib aytadi.
+
+Session tugaydi.
+
+Keyingi safar teacher shu xatolarni eslab qoladi.
+
+---
+
+# 161. RELEASE VOICE ACCEPTANCE CRITERIA
+
+Production release `Speaking` modulini complete deb hisoblama, toki:
+
+- kamida 5 verified female Uzbek voices
+- kamida 5 verified male Uzbek voices
+- jami kamida 10 distinct voices
+- har biri Uzbek textni tabiiy talaffuz qilishi
+- Preview ishlashi
+- gender metadata to‘g‘ri bo‘lishi
+- provider availability tekshirilishi
+- voice fallback ishlashi
+
+talablar bajarilmaguncha.
+
+Pitch-shift orqali duplicate yaratish acceptance criteria'ni bajarmaydi.
+
+---
+
+# 162. FINAL PRODUCT PRINCIPLE
+
+Bu Speaking modul oddiy chatbot bo‘lmasin.
+
+Foydalanuvchi:
+
+**gapirsin → tinglansin → tushunilsin → tabiiy javob olsin → xatosini ko‘rsin → qayta mashq qilsin → xato eslab qolinsin → keyingi lesson unga moslashsin.**
+
+Teacher esa:
+
+- bir xil VRM character
+- bir xil identity
+- tabiiy ovoz
+- foydalanuvchi levelini biladigan
+- Reading'dagi progressni biladigan
+- Speaking'dagi xatolarni eslab qoladigan
+
+haqiqiy **personal AI English Teacher** kabi ishlasin.
+
+Asosiy talab:
+
+**User speaking time maksimal, teacher talking time esa kerakli miqdorda bo‘lsin.**
+
+Appning maqsadi userga AI'ni tinglatish emas.
+
+Maqsad:
+
+**foydalanuvchini inglizcha gapirtirish.**

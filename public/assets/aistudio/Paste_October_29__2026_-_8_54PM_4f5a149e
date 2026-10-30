@@ -1,0 +1,2768 @@
+# ENGLISH AI TEACHER
+# DEMO → REAL PRODUCTION APPLICATION MASTER UPGRADE
+
+Mavjud `English AI Teacher` loyihasini noldan qayta yaratma.
+
+Avval mavjud source code'ni to‘liq o‘rgan:
+
+- `src/`
+- `server.ts`
+- `package.json`
+- Reading
+- Speaking
+- Writing
+- Curriculum
+- Teacher
+- Voice
+- AI services
+- Database services
+- Settings
+- Progress
+- My Words
+
+mavjud arxitekturani saqla.
+
+Maqsad:
+
+**demo ko‘rinishidagi funksiyalarni haqiqiy ishlaydigan production funksiyalariga aylantirish.**
+
+Bu oddiy UI polishing vazifasi emas.
+
+Quyidagi 5 qatlam birgalikda professional holatga keltirilsin:
+
+1. English-learning pedagogy
+2. AI intelligence
+3. Real data / real scoring
+4. Performance / speed
+5. Desktop-ready architecture
+
+---
+
+# 1. ENG MUHIM QOIDA — FAKE FUNCTIONALITYNI YO‘QOT
+
+Loyihada hech qanday:
+
+- fake score
+- hardcoded result
+- sample fallback
+- fake voice
+- fake subtitle
+- fake progress
+- placeholder AI answer
+- demo API success
+- random percentage
+
+qolmasin.
+
+Agar real result olinmasa:
+
+natijani uydirma.
+
+Masalan:
+
+Noto‘g‘ri:
+
+`Grammar Score: 78`
+
+faqat server ishlamagani sababli fallback sifatida.
+
+To‘g‘ri:
+
+`Grammar analysis is temporarily unavailable.`
+
+va:
+
+`Retry`
+
+`Switch AI`
+
+`Open Settings`
+
+ber.
+
+---
+
+# 2. MAVJUD WRITING'DAGI FAKE SCORENI OLIB TASHLA
+
+Hozirgi Writing implementation'da AI parsing ishlamasa hardcoded natijalar chiqishi mumkin.
+
+Masalan:
+
+- overallScore: 78
+- grammarScore
+- vocabularyScore
+- Band 6.5
+- boshqa fallback qiymatlar
+
+bularni production versiyadan butunlay olib tashla.
+
+AI analysis ishlamasa:
+
+```ts
+status: "unavailable"
+```
+
+qaytar.
+
+Userga soxta IELTS band berma.
+
+---
+
+# 3. WRITING UCHUN ALOHIDA REAL ENDPOINT YARAT
+
+Writing `teacher-chat` endpointidan foydalanmasin.
+
+Alohida endpoint:
+
+`POST /api/ai/writing-analysis`
+
+yarat.
+
+Request:
+
+```ts
+{
+  text: string;
+  task: string;
+  stage: "word" | "sentence" | "paragraph" | "essay";
+  level: string;
+  taskType?: string;
+  previousMistakes?: Mistake[];
+}
+```
+
+Response qat’iy schema bilan ishlasin.
+
+Masalan:
+
+```ts
+{
+  success: true,
+  analysis: {
+    grammar: {},
+    vocabulary: {},
+    coherence: {},
+    taskAchievement: {},
+    errors: [],
+    strengths: [],
+    priorityImprovement: {},
+    nextExercise: {}
+  }
+}
+```
+
+Schema validation ishlat.
+
+Malformed JSON UI'ni buzmasin.
+
+---
+
+# 4. IELTS SCORENI FAQAT MOS HOLATDA KO‘RSAT
+
+A1 student:
+
+`Band 6.5`
+
+degan ma’nosiz score olmasin.
+
+Scoring context-aware bo‘lsin.
+
+### Zero–B1
+
+CEFR based feedback:
+
+- emerging
+- developing
+- secure
+- mastered
+
+yoki:
+
+A1/A2/B1 skill progression.
+
+### B2+
+
+IELTS preparation boshlangach band estimate ko‘rsatish mumkin.
+
+Lekin:
+
+`Estimated practice band`
+
+deb yoz.
+
+Hech qachon:
+
+`Official IELTS Score`
+
+demagin.
+
+---
+
+# 5. IELTS WRITING REAL CRITERIA
+
+IELTS Writing practice'da alohida tahlil:
+
+### Task Achievement / Task Response
+
+Savolga to‘liq javob berdimi?
+
+### Coherence and Cohesion
+
+Fikrlar mantiqan bog‘langanmi?
+
+### Lexical Resource
+
+Vocabulary mos va tabiiy ishlatilganmi?
+
+### Grammatical Range and Accuracy
+
+Grammar range va accuracy qanday?
+
+Bitta `overallScore` hamma narsani yashirib yubormasin.
+
+---
+
+# 6. STUDENTNI AI O‘RNIGA YOZDIRMA
+
+Writing correction'da AI birinchi urinishdayoq perfect essay yozib bermasin.
+
+Progressive correction:
+
+### Step 1
+
+Xato joyini ko‘rsat.
+
+### Step 2
+
+Hint ber.
+
+### Step 3
+
+Relevant rule eslat.
+
+### Step 4
+
+Student qayta urinadi.
+
+### Step 5
+
+Kerak bo‘lsa correction ko‘rsat.
+
+### Step 6
+
+Shunga o‘xshash yangi mashq ber.
+
+AI studentning ishini bajaruvchi emas.
+
+AI studentni **mustaqil bajarishga olib boruvchi teacher**.
+
+---
+
+# 7. "IMPROVED VERSION"NI TO‘G‘RI ISHLAT
+
+Band 8 version darhol ko‘rsatilmasin.
+
+Button:
+
+`Show improved version`
+
+bo‘lsin.
+
+Avval student:
+
+- feedbackni o‘qisin
+- o‘zi rewrite qilsin
+
+Keyin comparison qilish mumkin.
+
+---
+
+# 8. SPEAKING'DAGI FAKE FALLBACKLARNI OLIB TASHLA
+
+Hozirgi Speaking implementation'dagi:
+
+`I'm listening! Please tell me more about that.`
+
+kabi generic fallbacklarni doimiy AI javobi sifatida ishlatma.
+
+AI failed bo‘lsa AI ishlamayotganini ko‘rsat.
+
+Generic English gap bilan errorni yashirma.
+
+---
+
+# 9. SPEAKING SESSION SCORENI UYDIRMA
+
+AI analysis response'da qiymat yo‘q bo‘lsa:
+
+```ts
+analysis.grammarScore || 78
+```
+
+kabi logic ishlatma.
+
+Bu noto‘g‘ri.
+
+Instead:
+
+```ts
+grammarScore: analysis.grammarScore ?? null
+```
+
+ishlat.
+
+UI:
+
+`Not assessed`
+
+deb ko‘rsatsin.
+
+---
+
+# 10. PRONUNCIATION SCORE FAQAT REAL AUDIO ASOSIDA
+
+LLM faqat transcriptni ko‘rib:
+
+`Pronunciation: 85`
+
+deyishi mumkin emas.
+
+Transcript pronunciation haqida yetarli ma’lumot bermaydi.
+
+Pronunciation evaluation uchun:
+
+- real audio
+- speech assessment engine
+- phoneme / word timing
+- audio quality
+
+kerak.
+
+Agar bunday provider mavjud bo‘lmasa:
+
+pronunciation score yashirilsin.
+
+Fake score yaratma.
+
+---
+
+# 11. SPEAKING METRICSNI MANBAGA AJRAT
+
+Quyidagi metriclar LLM transcriptdan olinishi mumkin:
+
+- grammar errors
+- vocabulary range estimate
+- repetition
+- response length
+- topic relevance
+- coherence
+
+Quyidagilar audio data talab qiladi:
+
+- pronunciation
+- rhythm
+- stress
+- intonation
+- speech pace
+- pauses
+- fillers
+
+Manbalarni aralashtirma.
+
+---
+
+# 12. REAL SPEECH PIPELINE
+
+Speaking pipeline:
+
+```text
+Microphone
+↓
+Voice Activity Detection
+↓
+Streaming Speech Recognition
+↓
+Transcript
+↓
+Conversation Engine
+↓
+Streaming AI Response
+↓
+Streaming TTS
+↓
+VRM Lip Sync
+```
+
+bo‘lishi kerak.
+
+User kutish vaqtini minimumga tushir.
+
+---
+
+# 13. AI TEZLIGI — ASOSIY PRIORITET
+
+Hozir AI response'lari imkon qadar tezlashtirilsin.
+
+Har request uchun ulkan system prompt qayta yuborilmasin.
+
+Promptlarni modullashtir.
+
+---
+
+# 14. SMALL CONTEXT PRINCIPLE
+
+Speaking requestga butun:
+
+- curriculum
+- barcha mistake history
+- barcha saved words
+- barcha conversation history
+
+yuborilmasin.
+
+Faqat relevant context yubor.
+
+Masalan:
+
+```text
+user level
+current goal
+current topic
+last 6–10 turns
+top 3 relevant mistakes
+3 target words
+teacher personality
+```
+
+yetarli bo‘lishi mumkin.
+
+---
+
+# 15. CONVERSATION HISTORY COMPRESSION
+
+Conversation uzoqlashganda:
+
+100 ta message'ni har requestda qayta yuborma.
+
+Strategy:
+
+```text
+Recent 8 turns
++
+Conversation summary
++
+Relevant long-term memory
+```
+
+ishlat.
+
+Oldingi turnlarni periodically summarize qil.
+
+---
+
+# 16. STREAMING RESPONSE
+
+Provider qo‘llasa AI response streaming ishlat.
+
+Teacher javobni to‘liq generatsiya qilib bo‘lgachgina ko‘rsatmasin.
+
+Text UI'da tokenlar kelishi bilan chiqsin.
+
+TTS ham imkon qadar sentence chunk bilan boshlansin.
+
+---
+
+# 17. TEACHER 1–3 GAPDAN ORTIQ GAPIRMASIN
+
+Speaking conversation'da default teacher response:
+
+1–3 qisqa sentence.
+
+Studentning speaking vaqti teacher'dan ko‘proq bo‘lishi kerak.
+
+Target:
+
+```text
+Student: 65–75%
+Teacher: 25–35%
+```
+
+---
+
+# 18. LATENCY PROFILING QO‘SH
+
+Development mode'da o‘lcha:
+
+```text
+STT latency
+AI first-token latency
+AI total latency
+TTS start latency
+full turn latency
+```
+
+Masalan console/dev panel:
+
+```text
+STT       430 ms
+LLM TTFT  610 ms
+TTS       380 ms
+Total     1.8 sec
+```
+
+Shunda qaysi qism sekinligini bilamiz.
+
+---
+
+# 19. REQUEST CANCELLATION
+
+User yangi savol bersa oldingi AI request bekor qilinsin.
+
+`AbortController`
+
+ishlat.
+
+Orqada eski requestlar response berib UI'ni buzmasin.
+
+---
+
+# 20. DUPLICATE REQUESTLARNI TO‘XTAT
+
+Double click yoki React rerender sabab bir savol AI'ga ikki marta ketmasin.
+
+Request ID yarat.
+
+Same operation pending bo‘lsa duplicate call bloklansin.
+
+---
+
+# 21. TIMEOUT
+
+Har AI request endless kutmasin.
+
+Masalan:
+
+- short analysis: 10–15 sec
+- conversation: ancha qisqa target
+- large generation: longer timeout
+
+Timeout bo‘lsa userga aniq holat ko‘rsat.
+
+---
+
+# 22. RETRY STRATEGY
+
+Server fail qilganda darhol 5 marta request yuborma.
+
+Exponential backoff:
+
+```text
+attempt 1
+↓
+short delay
+↓
+attempt 2
+↓
+backup key/provider
+```
+
+ishlat.
+
+---
+
+# 23. API KEY FAILOVERNI PROFESSIONAL QIL
+
+Hozir quota bo‘lsa backup keyga o‘tish logikasi bor.
+
+Uni rivojlantir.
+
+API key status:
+
+```text
+active
+ready
+rate_limited
+quota_exhausted
+invalid
+disabled
+cooldown
+```
+
+bo‘lsin.
+
+---
+
+# 24. RATE-LIMITED KEYNI ABADIY O‘CHIRMA
+
+`rate_limited`
+
+key keyinchalik qayta ishlashi mumkin.
+
+`retryAfter`
+
+yoki cooldown timestamp saqla.
+
+Key availability avtomatik qayta tekshirilsin.
+
+---
+
+# 25. INVALID KEY VA QUOTA'NI AJRAT
+
+401 / authentication:
+
+`invalid`
+
+429:
+
+`rate_limited`
+
+quota exhausted:
+
+`quota_exhausted`
+
+network error:
+
+keyni buzilgan deb belgilama.
+
+---
+
+# 26. OPENAI UI BOR BO‘LSA REAL IMPLEMENT QIL
+
+Agar Settings'da:
+
+Gemini
+
+OpenAI
+
+tanlash mavjud bo‘lsa, ikkalasi ham real ishlasin.
+
+Aks holda OpenAI optionni UI'dan olib tashla yoki:
+
+`Coming later`
+
+deb ko‘rsat.
+
+Fake connection success bo‘lmasin.
+
+---
+
+# 27. PROVIDER ABSTRACTION
+
+AI service:
+
+```ts
+interface AIProvider {
+  testConnection()
+  generate()
+  stream()
+  healthCheck()
+}
+```
+
+bo‘lsin.
+
+Implementations:
+
+```text
+GeminiProvider
+OpenAIProvider
+FutureProvider
+```
+
+---
+
+# 28. MODELNI BIR JOYDA BOSHQAR
+
+Har server endpoint ichida model nomini takrorlama.
+
+`aiConfig.ts`
+
+yarat.
+
+Masalan:
+
+```ts
+FAST_MODEL
+QUALITY_MODEL
+LONG_CONTEXT_MODEL
+```
+
+Providerda mavjud va support qilinadigan modeldan foydalan.
+
+Unsupported hardcoded model sabab app yiqilmasin.
+
+---
+
+# 29. FAST VA QUALITY MODE
+
+Settings:
+
+`AI Response Mode`
+
+### Fast
+Conversation, dictionary, quick translation.
+
+### Balanced
+Daily lessons.
+
+### Deep
+Essay analysis, IELTS writing review.
+
+Barcha vazifa uchun eng og‘ir model ishlatish tezlik va xarajatni yomonlashtiradi.
+
+---
+
+# 30. TASK ROUTING
+
+Masalan:
+
+word translation → fast model
+
+simple grammar explanation → fast model
+
+speaking turn → fast streaming model
+
+IELTS essay deep analysis → quality model
+
+curriculum generation → quality model
+
+Shunday routing qur.
+
+---
+
+# 31. AI TAKRORLANISHINI TO‘XTAT
+
+Bu loyihaning eng muhim pedagogik talabi.
+
+Teacher:
+
+bir xil:
+
+`Great job!`
+
+`Keep practicing!`
+
+`Can you tell me more?`
+
+gaplarini har safar takrorlamasin.
+
+---
+
+# 32. NOVELTY ENGINE
+
+Har conversation turn uchun recent teacher outputs saqlansin.
+
+AI yangi reply yaratishidan oldin:
+
+```text
+Do not repeat phrases, questions, examples or explanations used recently.
+```
+
+qoidasi ber.
+
+Recent:
+
+5–10 teacher responses
+
+tekshir.
+
+---
+
+# 33. SEMANTIC DEDUPLICATION
+
+Faqat exact text emas.
+
+Masalan:
+
+`Why do you like programming?`
+
+va
+
+`Can you explain why you enjoy programming?`
+
+deyarli bir xil pedagogik savol.
+
+AI session planner bir xil maqsaddagi savolni qayta-qayta bermasin.
+
+---
+
+# 34. HAR TURN YANGI QIYMAT BERISHI SHART
+
+Har teacher response kamida bittasini bajarishi kerak:
+
+- yangi savol
+- yangi vocabulary
+- yangi grammar insight
+- yangi natural expression
+- oldingi fikrni chuqurlashtirish
+- clarification
+- contrast
+- example
+- reasoning
+- pronunciation target
+
+Agar yangi qiymat bermasa, response qayta generatsiya qilinsin.
+
+---
+
+# 35. CONVERSATION OBJECTIVE TRACKER
+
+Session ichida tracker:
+
+```ts
+{
+  askedTopics: [],
+  practicedGrammar: [],
+  usedVocabulary: [],
+  correctionsGiven: [],
+  examplesUsed: [],
+  followUpsAsked: []
+}
+```
+
+saqla.
+
+AI shu sessionda nimani berganini bilsin.
+
+---
+
+# 36. BIR SAVOLNI BOSHQA SO‘Z BILAN QAYTA SO‘RAMA
+
+Agar:
+
+`What do you do every morning?`
+
+berilgan bo‘lsa, 2 turn keyin:
+
+`Tell me about your morning routine.`
+
+degan savolni sabab bo‘lmasa qayta bermasin.
+
+Progressive depth ishlat.
+
+Masalan:
+
+1.
+
+What do you do every morning?
+
+2.
+
+Which part of your morning is most important?
+
+3.
+
+Why?
+
+4.
+
+How is your weekend routine different?
+
+Har gap **yangi thinking demand** bersin.
+
+---
+
+# 37. PROGRESSIVE DIFFICULTY
+
+Student to‘g‘ri javob berayotgan bo‘lsa mashq ozgina murakkablashsin.
+
+Masalan:
+
+```text
+I am a student.
+↓
+I study at university.
+↓
+I usually study in the morning.
+↓
+I usually study in the morning because...
+```
+
+Bir xil qiyinchilikda cheksiz yurmasin.
+
+---
+
+# 38. ADAPTIVE DIFFICULTY
+
+Agar ketma-ket 2–3 xato bo‘lsa:
+
+qiyinchilikni vaqtincha tushir.
+
+Agar ketma-ket muvaffaqiyat bo‘lsa:
+
+bitta kichik yangi element qo‘sh.
+
+---
+
+# 39. ZERO LEVEL STUDENTGA IELTS ESSAY BERMA
+
+Student level:
+
+Zero/A1
+
+bo‘lsa appning main daily learning qismi IELTS essay ko‘rsatmasin.
+
+IELTS target uzoq muddatli maqsad bo‘lishi mumkin.
+
+Bugungi task studentning real leveliga mos bo‘lsin.
+
+---
+
+# 40. MASTER CURRICULUM
+
+Learning progression:
+
+```text
+ZERO
+↓
+A1
+↓
+A2
+↓
+B1
+↓
+B2
+↓
+C1
+↓
+IELTS Foundation
+↓
+IELTS 6
+↓
+IELTS 7
+↓
+IELTS 7.5
+↓
+IELTS 8 readiness
+```
+
+---
+
+# 41. MASTERY GATE
+
+Level vaqtga qarab ochilmasin.
+
+Real skill mastery talab qilinsin.
+
+Student:
+
+grammar yaxshi
+
+lekin speaking yomon
+
+bo‘lsa keyingi katta levelga avtomatik o‘tmasin.
+
+---
+
+# 42. HAR DARS BIR ASOSIY MAQSAD
+
+Masalan:
+
+`Today: am / is / are`
+
+Darsga:
+
+Present Perfect
+
+Passive
+
+IELTS vocabulary
+
+ni aralashtirma.
+
+---
+
+# 43. HAR DARSDA FAQAT 3 TA ASOSIY CLASS TASK
+
+Doim:
+
+### Task 1 — Understand
+
+Tushundimi?
+
+### Task 2 — Apply
+
+Qoidani ishlata oladimi?
+
+### Task 3 — Produce
+
+O‘zi mustaqil gapira/yoza oladimi?
+
+---
+
+# 44. HAR DARSDA 10 TA HOMEWORK
+
+Doim o‘tilgan mavzudan:
+
+```text
+1–2 Vocabulary
+3–4 Grammar
+5–6 Reading
+7 Listening
+8 Speaking
+9 Writing
+10 Mixed challenge
+```
+
+---
+
+# 45. HOMEWORK YANGI MAVZU O‘RGATMASIN
+
+Uyga vazifa:
+
+bugungi mavzuni mustahkamlashi kerak.
+
+Unda ertangi yangi grammar yashirincha kiritilmasin.
+
+---
+
+# 46. SPACED REVIEW
+
+Bugun o‘rgangan knowledge:
+
+- bugun
+- keyingi dars
+- bir necha kundan keyin
+- keyingi hafta
+
+yangi kontekstlarda qaytsin.
+
+---
+
+# 47. VOCABULARY RECYCLING
+
+Word bir marta ko‘rilib yo‘qolmasin.
+
+Masalan:
+
+`improve`
+
+Reading'da o‘rganildi.
+
+Speaking'da ishlatildi.
+
+Writing'da ishlatildi.
+
+Keyin review'da qayta chiqdi.
+
+Shundan keyingina `known/mastered`ga yaqinlashsin.
+
+---
+
+# 48. ACTIVE VS PASSIVE VOCABULARY
+
+Ikki holatni ajrat:
+
+### Recognized
+Student so‘zni ko‘rsa tushunadi.
+
+### Active
+Student gapirish yoki yozishda o‘zi ishlatadi.
+
+Bu bir xil emas.
+
+---
+
+# 49. MISTAKE MEMORYNI REAL QIL
+
+Bir xil xatoni duplicate qilib yuz marta saqlama.
+
+Masalan:
+
+```text
+I go yesterday
+Yesterday I go university
+Yesterday I go market
+```
+
+bular:
+
+`Past Simple / irregular verb`
+
+patterniga guruhlanishi mumkin.
+
+---
+
+# 50. MISTAKE PRIORITY
+
+Har mistake uchun:
+
+```text
+frequency
+severity
+lastSeen
+lastPracticed
+mastery
+skill
+```
+
+saqla.
+
+---
+
+# 51. TEACHER FAQAT ENG MUHIM XATONI AJRATSIN
+
+Speaking session tugagach 17 ta xato bilan bombardimon qilma.
+
+Avval:
+
+`Most important improvement`
+
+ko‘rsat.
+
+Keyin qolganlari expandable bo‘lsin.
+
+---
+
+# 52. READING'DAGI VIDEO DEMONI OLIB TASHLA
+
+Hozir Upload Video real uploaded video o‘rniga sample video ishlatishi mumkin.
+
+Buni olib tashla.
+
+---
+
+# 53. REAL VIDEO UPLOAD
+
+User real:
+
+- MP4
+- WebM
+
+tanlay olsin.
+
+File validation:
+
+- format
+- size
+- readable file
+
+tekshir.
+
+---
+
+# 54. REAL VIDEO URL
+
+Browser versiyada:
+
+`URL.createObjectURL(file)`
+
+session uchun ishlatilishi mumkin.
+
+Desktop versiyada real app-managed storage kerak.
+
+Video sample URL hardcode qilinmasin.
+
+---
+
+# 55. REAL SUBTITLE
+
+Video subtitle mavjud bo‘lsa:
+
+- WebVTT
+- SRT
+- embedded subtitle support imkoniyatiga qarab
+
+parse qil.
+
+Subtitle yo‘q bo‘lsa:
+
+`No subtitles detected`
+
+de.
+
+Fake subtitle yaratma.
+
+---
+
+# 56. AI TRANSCRIPTION OPTIONAL
+
+Agar transcription provider ulangan bo‘lsa:
+
+audio → transcript.
+
+Userdan oldin:
+
+`Generate transcript`
+
+ruxsati olinishi mumkin.
+
+Large video AI'ga to‘liq binary yuborib yuborma.
+
+---
+
+# 57. READING WORD ANALYSIS CACHE
+
+Bir student bir text ichida:
+
+`develop`
+
+so‘zini 5 marta bossа, AI'ga 5 marta request yuborma.
+
+Cache key:
+
+```text
+word + sentence + level + language
+```
+
+ishlat.
+
+Bu tezlikni jiddiy oshiradi.
+
+---
+
+# 58. SENTENCE ANALYSIS CACHE
+
+Bir xil sentence qayta bosilsa cached analysisni ishlat.
+
+Refresh tugmasi bilan qayta generate qilish mumkin.
+
+---
+
+# 59. TRANSLATION CACHE
+
+Common word translationlar local cache'da bo‘lsin.
+
+AI har safar:
+
+hello
+
+student
+
+teacher
+
+kabi oddiy so‘z uchun ishlatilmasin.
+
+---
+
+# 60. LOCAL DICTIONARY LAYER
+
+Basic high-frequency English vocabulary uchun small local dictionary database yaratilishi mumkin.
+
+AI:
+
+- ambiguity
+- contextual meaning
+- advanced explanation
+
+kerak bo‘lgandagina ishlasin.
+
+Bu latency va API usage kamaytiradi.
+
+---
+
+# 61. TEACHER CHAT CONTEXTNI CHEKLA
+
+Reading teacher chatga butun katta text har savolda yuborilmasin.
+
+Relevant:
+
+- current paragraph
+- selected sentence
+- selected word
+- text summary
+
+ishlat.
+
+---
+
+# 62. READING PROGRESS REAL BO‘LSIN
+
+Progress:
+
+matnni shunchaki ochganini emas,
+
+real interactionni hisoblasin.
+
+Masalan:
+
+- viewed
+- read duration
+- reached end
+- comprehension completed
+
+---
+
+# 63. WRITING PROGRESS REAL BO‘LSIN
+
+Word countni skill deb hisoblama.
+
+Progress:
+
+- error rate change
+- sentence accuracy
+- idea development
+- rewrite quality
+- recurring mistakes
+
+asosida bo‘lsin.
+
+---
+
+# 64. SPEAKING PROGRESS REAL BO‘LSIN
+
+Session soni o‘zi yetmaydi.
+
+Track:
+
+- total speaking time
+- average answer length
+- grammar patterns
+- vocabulary activation
+- repeated mistakes
+- audio-derived fluency metrics when available
+
+---
+
+# 65. VOICE REGISTRY'DAGI FAKE 10 OVOZ MUAMMOSI
+
+Current UI'da 5 female + 5 male Uzbek voice nomlari ko‘rsatilishi mumkin.
+
+Lekin browser `speechSynthesis` ular uchun alohida real ovoz bermasa:
+
+ularni distinct real voices deb ko‘rsatish noto‘g‘ri.
+
+---
+
+# 66. REAL VOICE REGISTRY
+
+Har voice:
+
+```ts
+{
+  id,
+  provider,
+  providerVoiceId,
+  displayName,
+  locale,
+  gender,
+  nativeUzbek,
+  available,
+  quality
+}
+```
+
+bo‘lsin.
+
+---
+
+# 67. VOICE AVAILABILITY
+
+Providerda voice mavjud bo‘lmasa:
+
+UI'da unavailable.
+
+Soxta preview qilma.
+
+---
+
+# 68. 5 FEMALE + 5 MALE ACCEPTANCE RULE
+
+Production release uchun:
+
+kamida:
+
+5 real distinct female Uzbek voices
+
++
+
+5 real distinct male Uzbek voices
+
+talab qilinsa, haqiqiy providerlarni ulab shu talabni bajargin.
+
+Bitta system voice'ni 10 ta nom bilan ko‘rsatish mumkin emas.
+
+---
+
+# 69. BROWSER TTS FALLBACK
+
+System SpeechSynthesis faqat:
+
+fallback
+
+sifatida ishlasin.
+
+Userga:
+
+`System voice`
+
+deb aniq ko‘rsat.
+
+---
+
+# 70. TTS CACHE
+
+Static lesson phrases va common prompts local/cache bo‘lishi mumkin.
+
+Lekin privacy va storage limitsni hisobga ol.
+
+---
+
+# 71. VRM GLOBAL BO‘LSIN
+
+Reading uchun bitta teacher,
+
+Speaking uchun boshqa teacher
+
+bo‘lmasin.
+
+Global Teacher Manager ishlat.
+
+---
+
+# 72. VRM FILE PERSISTENCE
+
+`URL.createObjectURL(file)`
+
+permanent storage emas.
+
+Browser refresh/restartdan keyin URL ishlamasligi mumkin.
+
+Production desktop'da:
+
+VRM file app data folderga copy qil.
+
+Database faqat persistent path / managed identifier saqlasin.
+
+---
+
+# 73. VRM STATES
+
+Teacher states:
+
+```text
+idle
+listening
+thinking
+speaking
+explaining
+encouraging
+celebrating
+error
+```
+
+bo‘lsin.
+
+---
+
+# 74. VRM PERFORMANCE
+
+VRM har tabda qayta load qilinmasin.
+
+Global lifecycle yoki cached asset ishlat.
+
+Tab almashishda modelni qayta download/parse qilish latency keltirmasin.
+
+---
+
+# 75. LIP SYNC
+
+Agar provider viseme bersa foydalan.
+
+Aks holda audio-amplitude approximation.
+
+Static random mouth animation ishlatma.
+
+---
+
+# 76. DATABASE'NI LOCALSTORAGEDAN CHIQAR
+
+Hozirgi katta `DBService` localStorage asosida ishlashi mumkin.
+
+Production desktop uchun bu yetarli emas.
+
+Structured local database:
+
+SQLite
+
+yoki mos local persistent database ishlat.
+
+---
+
+# 77. LOCALSTORAGE FAQAT MAYDA UI PREFERENCE UCHUN
+
+Masalan:
+
+- theme
+- sidebar collapsed
+
+kabi.
+
+Lekin:
+
+API keys
+
+learning history
+
+mistakes
+
+sessions
+
+VRM path
+
+katta structured data
+
+localStorage'da saqlanmasin.
+
+---
+
+# 78. API KEY XAVFSIZLIGI
+
+`btoa()`
+
+encryption emas.
+
+Obfuscation bilan API secretni himoyalangan deb hisoblama.
+
+---
+
+# 79. DESKTOP SECRET STORAGE
+
+Electron versiyada:
+
+- OS credential storage
+- Electron `safeStorage`
+- secure main-process storage
+
+kabi mexanizm ishlat.
+
+Renderer API keyni imkon qadar ko‘rmasin.
+
+---
+
+# 80. SERVERGA KEY YUBORISH
+
+Key flow aniq va xavfsiz bo‘lsin.
+
+Frontend source ichiga key yozma.
+
+Console loggingda key ko‘rinmasin.
+
+Error logs ham keyni chiqarib yubormasin.
+
+---
+
+# 81. INPUT VALIDATION
+
+Har endpoint serverda request schema validate qilsin.
+
+Masalan:
+
+- empty text
+- huge input
+- invalid level
+- malformed history
+- 100MB JSON
+
+qabul qilinmasin.
+
+---
+
+# 82. OUTPUT VALIDATION
+
+AI JSON qaytardi deb ishonib ketma.
+
+Schema validate qil.
+
+Missing properties uchun UI fallback state.
+
+Fake data emas.
+
+---
+
+# 83. AI JSON PARSING RECOVERY
+
+Agar AI invalid JSON qaytarsa:
+
+1. structured parsing attempt
+2. safe repair attempt
+3. limited retry
+4. failure state
+
+bo‘lsin.
+
+Hardcoded fake resultga o‘tma.
+
+---
+
+# 84. ERROR TYPES
+
+Generic:
+
+`Something went wrong`
+
+o‘rniga internal error categories:
+
+```text
+NETWORK
+TIMEOUT
+INVALID_API_KEY
+RATE_LIMIT
+QUOTA
+INVALID_AI_RESPONSE
+MIC_PERMISSION
+TTS_UNAVAILABLE
+STT_UNAVAILABLE
+FILE_ERROR
+DATABASE_ERROR
+```
+
+bo‘lsin.
+
+---
+
+# 85. USER FRIENDLY ERROR
+
+Internal code userga qo‘rqinchli stack trace bilan chiqmasin.
+
+Masalan:
+
+`AI response could not be processed. Try again.`
+
+va Details development mode'da.
+
+---
+
+# 86. TEACHER RESPONSE STYLE
+
+Teacher:
+
+- natural
+- concise
+- supportive
+- direct
+- level appropriate
+
+bo‘lsin.
+
+Har gapda maqtov yozma.
+
+---
+
+# 87. EMPTY PRAISE'NI KAMAYTIR
+
+Quyidagilarni haddan ortiq ishlatma:
+
+`Great!`
+
+`Excellent!`
+
+`Amazing!`
+
+`Good job!`
+
+Maqtov meaningful bo‘lsin.
+
+Masalan:
+
+`You used the past tense correctly this time.`
+
+Bu aniq feedback.
+
+---
+
+# 88. FEEDBACK HAR SAFAR YANGI MA’LUMOT BERSIN
+
+Noto‘g‘ri:
+
+Turn 1:
+
+`Use more vocabulary.`
+
+Turn 2:
+
+`Try to use more words.`
+
+Turn 3:
+
+`Expand your vocabulary.`
+
+Bu bir xil ma’lumot.
+
+To‘g‘ri:
+
+Turn 1:
+
+`Replace "very good" with "useful" here.`
+
+Turn 2:
+
+`Try the collocation "play an important role".`
+
+Turn 3:
+
+`Your idea is clear; now add a reason using "because".`
+
+Har feedback actionable va yangi.
+
+---
+
+# 89. TEACHER STATE
+
+Teacher session davomida bilsin:
+
+```text
+What student already understood
+What student failed
+What was explained
+What examples were used
+What hints were used
+What remains to teach
+```
+
+---
+
+# 90. EXPLANATION DEDUPLICATION
+
+Agar `am/is/are` qoidasi allaqachon tushuntirilgan bo‘lsa:
+
+yana butun theory'ni qayta yozma.
+
+Faqat:
+
+`Remember: I → am.`
+
+kabi qisqa reference ber.
+
+Faqat student yana chuqur tushunmayotgan bo‘lsa qayta tushuntir.
+
+---
+
+# 91. KNOWLEDGE CONFIRMATION
+
+AI:
+
+`Tushundingizmi?`
+
+deb shunchaki so‘ramasin.
+
+Real micro-check ber.
+
+Masalan:
+
+`She ___ a student.`
+
+Agar to‘g‘ri:
+
+keyingi skillga.
+
+Agar xato:
+
+targeted explanation.
+
+---
+
+# 92. FIRST ATTEMPT BEFORE ANSWER
+
+Studentga imkon qadar javobdan oldin o‘ylash imkonini ber.
+
+`Show answer`
+
+default action bo‘lmasin.
+
+---
+
+# 93. THREE-HINT SYSTEM BUTUN APPDA
+
+### Hint 1
+
+Direction.
+
+### Hint 2
+
+Rule / keyword.
+
+### Hint 3
+
+Full example.
+
+Reading, Speaking, Writing, Homework'da bir xil pedagogik model.
+
+---
+
+# 94. LESSON GENERATION HAR SAFAR RANDOM EMAS
+
+Curriculum'da canonical learning order bo‘lsin.
+
+AI har kuni tasodifiy grammar tanlamasin.
+
+AI faqat:
+
+- examples
+- exercises
+- topics
+- personalization
+
+yaratsin.
+
+Learning sequence deterministic curriculumga asoslanishi kerak.
+
+---
+
+# 95. CURRICULUM SOURCE OF TRUTH
+
+`curriculumEngine`
+
+bitta source of truth.
+
+AI o‘zicha student levelini sakratib yubormasin.
+
+---
+
+# 96. DIAGNOSTIC TEST
+
+Yangi user uchun optional diagnostic.
+
+Lekin user:
+
+`I know nothing`
+
+desa test bilan qiynamasdan Zero Leveldan boshlash mumkin.
+
+---
+
+# 97. DAILY PLAN
+
+App ochilganda student nimani qilishini bilsin.
+
+Home:
+
+```text
+Today's Lesson
+15–30 min
+
+1. Learn
+2. Reading
+3. Speaking
+4. Writing
+5. Review
+```
+
+aniq ko‘rsat.
+
+---
+
+# 98. ONE-TAP START
+
+`Start Today's Lesson`
+
+button.
+
+Student 30 ta tab ichidan nimani tanlashni o‘zi hal qilishga majbur bo‘lmasin.
+
+---
+
+# 99. TABLAR QOLADI, LEKIN LEARNING FLOW ULARNI BOG‘LAYDI
+
+Reading, Speaking, Writing mustaqil practice uchun mavjud.
+
+Lekin Daily Lesson flow:
+
+```text
+Vocabulary
+↓
+Mini grammar
+↓
+Reading
+↓
+Speaking
+↓
+Writing
+↓
+3 Tasks
+↓
+10 Homework
+```
+
+bog‘langan bo‘lsin.
+
+---
+
+# 100. SAME KNOWLEDGE ACROSS SKILLS
+
+Bugungi words:
+
+```text
+study
+student
+university
+English
+every day
+```
+
+bo‘lsa:
+
+Reading shu so‘zlardan foydalansin.
+
+Speaking shu so‘zlardan foydalansin.
+
+Writing shu so‘zlardan foydalansin.
+
+Homework ham shu knowledge'ni mustahkamlasin.
+
+---
+
+# 101. TEACHER SAVOLLARI RANDOM EMAS, PURPOSEFUL BO‘LSIN
+
+Har question metadata:
+
+```ts
+{
+  objective,
+  targetSkill,
+  targetGrammar,
+  targetVocabulary,
+  difficulty
+}
+```
+
+ga ega bo‘lsin.
+
+---
+
+# 102. AI RESPONSE QUALITY CHECK
+
+AI output UI'ga chiqishidan oldin lightweight validation:
+
+- too long?
+- duplicate?
+- level too hard?
+- contains unexplained advanced terms?
+- repeated previous question?
+- answer leaked?
+- fake score?
+
+tekshir.
+
+---
+
+# 103. LEVEL LANGUAGE CONTROL
+
+Zero/A1 teacher explanation Uzbek-heavy bo‘lishi mumkin.
+
+Gradually:
+
+A2 → mixed
+
+B1 → more English
+
+B2+ → English first
+
+lekin user setting bilan o‘zgartira olsin.
+
+---
+
+# 104. ADVANCED WORDSNI IZOHLA
+
+Teacher A1 studentga:
+
+`substantial`
+
+ishlatsa, bu xato.
+
+A1 vocabulary limitga mos response yoz.
+
+---
+
+# 105. USER MODELINI YARAT
+
+Global LearnerProfile:
+
+```ts
+{
+  currentLevel,
+  goal,
+  masteredSkills,
+  weakSkills,
+  activeVocabulary,
+  passiveVocabulary,
+  recurringMistakes,
+  preferredSupportLanguage,
+  dailyGoal
+}
+```
+
+---
+
+# 106. PERSONALIZATION FAQAT RELEVANT DATA ASOSIDA
+
+User programmingga qiziqsa har bir misol programming bo‘lib ketmasin.
+
+Topics diversify qil.
+
+---
+
+# 107. CONTENT ROTATION
+
+Topic history saqla.
+
+Masalan oxirgi mavzular:
+
+Technology
+
+University
+
+Daily routine
+
+Travel
+
+bo‘lsa keyingi lesson:
+
+Food
+
+Health
+
+Culture
+
+kabi boshqa relevant topic bo‘lishi mumkin.
+
+---
+
+# 108. EXAMPLE ROTATION
+
+Bir grammar uchun har doim:
+
+`I go to school.`
+
+misolini ishlatma.
+
+Yangi nouns, verbs, contextlar ishlat.
+
+---
+
+# 109. SAME WORD OVERUSE
+
+Teacher response ichida bir xil adjective yoki phrase haddan tashqari qaytarilmasin.
+
+---
+
+# 110. SENTENCE VARIETY
+
+A1 levelga mos bo‘lsa ham:
+
+faqat bir xil sentence template ishlatma.
+
+Controlled variation qo‘sh.
+
+---
+
+# 111. UI PERFORMANCE
+
+React componentlarni unnecessary rerenderdan saqla.
+
+Expensive VRM renderer, transcript va AI state bir rerender chain ichida bo‘lmasin.
+
+---
+
+# 112. LAZY LOAD
+
+Quyidagilar talab qilinmaguncha yuklanmasin:
+
+- VRM heavy assets
+- video tools
+- advanced IELTS module
+- charts
+- large history
+
+---
+
+# 113. TAB SWITCH TEZ BO‘LSIN
+
+Reading → Speaking o'tishda:
+
+teacher qayta loading
+
+database qayta full parse
+
+AI re-init
+
+qilmasin.
+
+---
+
+# 114. PREFETCH
+
+Daily lesson'da keyingi kichik resource oldindan tayyorlanishi mumkin.
+
+Masalan Reading tugayotgan paytda Speaking target context prepare.
+
+---
+
+# 115. OPTIMISTIC UI
+
+`Save Word`
+
+bosilganda API javobini kutib UI qotmasin.
+
+Local action instant.
+
+Background persistence.
+
+Error bo‘lsa rollback.
+
+---
+
+# 116. LOADING STATE SPECIFIC BO‘LSIN
+
+Generic spinner yetarli emas.
+
+Masalan:
+
+`Analyzing your sentence...`
+
+`Preparing a simpler explanation...`
+
+`Connecting to speech service...`
+
+---
+
+# 117. DOIMIY SPINNER QO‘YMA
+
+Short local actions uchun spinner ko‘rsatish shart emas.
+
+App tez tuyulishi ham muhim.
+
+---
+
+# 118. SERVER LOGGING
+
+Developmentda structured log:
+
+```text
+requestId
+endpoint
+provider
+model
+latency
+status
+retryCount
+```
+
+Ammo:
+
+API key
+
+full private content
+
+log qilinmasin.
+
+---
+
+# 119. ANALYTICS LOCAL FIRST
+
+Student progress analytics local database'da hisoblanishi mumkin.
+
+Har graph uchun AI chaqirma.
+
+---
+
+# 120. COMPUTABLE METRICNI AI'GA BERMA
+
+Masalan:
+
+wordCount
+
+duration
+
+session count
+
+average sentence length
+
+local code bilan hisobla.
+
+AI token sarflama.
+
+---
+
+# 121. GRAMMAR ANALYSIS AI + RULE LAYER
+
+Simple basic grammar uchun local deterministic rules ishlatish mumkin.
+
+Complex feedback AI'ga.
+
+Bu speed + reliability beradi.
+
+---
+
+# 122. CACHE INVALIDATION
+
+Student level o‘zgarsa eski A1 AI explanation cache'ni B1 lesson uchun blindly ishlatma.
+
+Cache metadata bilan.
+
+---
+
+# 123. NETWORK OFFLINE MODE
+
+Network yo‘q:
+
+- oldingi lessons
+- saved words
+- mistakes
+- notes
+- progress
+- local TTS
+
+imkon qadar ishlasin.
+
+---
+
+# 124. AI OFFLINE BO‘LSA APP YIQILMASIN
+
+Teacher AI kerak bo‘lgan button disabled yoki retry state.
+
+Reading saved text hali ochilsin.
+
+---
+
+# 125. DESKTOP MIGRATIONGA TAYYORLA
+
+Hozir loyiha React/Vite + Express web architecture.
+
+Production desktop uchun Electron integrationga tayyor refactor qil.
+
+---
+
+# 126. ELECTRON LAYER
+
+Kelajak/yakuniy versiyada:
+
+```text
+electron/
+├── main.ts
+├── preload.ts
+├── ipc/
+├── storage/
+└── security/
+```
+
+kabi ajrat.
+
+---
+
+# 127. CONTEXT ISOLATION
+
+Electron:
+
+```text
+contextIsolation: true
+nodeIntegration: false
+```
+
+security principle.
+
+Rendererga to‘liq Node access berma.
+
+---
+
+# 128. IPC API
+
+Renderer faqat safe exposed methods ishlatsin.
+
+Masalan:
+
+```ts
+window.desktop.secureStore
+window.desktop.selectVRM
+window.desktop.selectVideo
+window.desktop.database
+```
+
+---
+
+# 129. FILE PICKER REAL BO‘LSIN
+
+Desktop:
+
+- VRM
+- video
+- subtitle
+- document
+
+native file dialog orqali.
+
+---
+
+# 130. BUILD CONFIGURATION
+
+Electron build qo‘shilganda:
+
+- portable
+- installer
+
+Windows uchun build qilinishi mumkin bo‘lsin.
+
+Lekin development web mode ham ishlashi mumkin.
+
+---
+
+# 131. TESTLAR
+
+Core logic uchun test yoz.
+
+Minimum:
+
+- API failover
+- invalid JSON
+- rate limit
+- mistake grouping
+- curriculum progression
+- level gate
+- voice availability
+- writing score absence
+- duplicate prevention
+- cache behavior
+
+---
+
+# 132. END-TO-END TEST
+
+Scenario:
+
+Zero student
+
+↓
+
+Lesson 1
+
+↓
+
+Reading
+
+↓
+
+Speaking
+
+↓
+
+Writing
+
+↓
+
+3 tasks
+
+↓
+
+10 homework
+
+↓
+
+progress saved
+
+↓
+
+app restart
+
+↓
+
+same progress restored
+
+real ishlashi kerak.
+
+---
+
+# 133. REAL VOICE TEST
+
+Har voice:
+
+preview
+
+English
+
+Uzbek
+
+switch
+
+restart persistence
+
+test qil.
+
+---
+
+# 134. REAL VRM TEST
+
+VRM upload
+
+↓
+
+app restart
+
+↓
+
+same VRM loads
+
+↓
+
+Reading
+
+↓
+
+Speaking
+
+↓
+
+Writing
+
+bir xil teacher.
+
+---
+
+# 135. FAILURE TEST
+
+Internetni o‘chir.
+
+App crash qilmasligi kerak.
+
+API key invalid qil.
+
+App crash qilmasligi kerak.
+
+JSON malformed qaytar.
+
+App fake score yaratmasligi kerak.
+
+---
+
+# 136. PEDAGOGICAL ACCEPTANCE TEST
+
+Zero-level student birinchi kun appni ochganda quyidagilarni ko‘rmasligi kerak:
+
+- IELTS Task 2 essay first
+- C1 vocabulary
+- 30 grammar rules
+- 50 new words
+- complex native-level teacher answer
+
+Buning o‘rniga:
+
+small first lesson.
+
+---
+
+# 137. AI NON-REPETITION ACCEPTANCE TEST
+
+10-turn conversation yoz.
+
+Tekshir:
+
+- bir xil follow-up qaytarilmadi
+- bir xil praise qaytarilmadi
+- bir xil example qaytarilmadi
+- har turn yangi maqsad berdi
+- complexity asta oshdi
+
+Agar 10 turn ichida semantic repetition ko‘p bo‘lsa, task complete emas.
+
+---
+
+# 138. SPEED ACCEPTANCE TEST
+
+Conversation experience'da:
+
+- UI immediately responsive
+- microphone starts quickly
+- transcript appears quickly
+- AI first response chunk imkon qadar erta
+- TTS sentence completionni kutmasdan oqilona boshlanadi
+
+Performance profiling qil.
+
+---
+
+# 139. DO NOT REWRITE EVERYTHING
+
+Mavjud ishlaydigan UI va componentlarni saqla.
+
+Faqat muammoli architecture/refactor zarur bo‘lgan qismlarni yangila.
+
+---
+
+# 140. KOD BERISHDAN OLDIN AUDIT
+
+Avval repository audit qil.
+
+Report yarat:
+
+```text
+1. Fully working
+2. Partially working
+3. Demo/mock
+4. Broken
+5. Security risk
+6. Performance bottleneck
+7. Pedagogical issue
+```
+
+Har topilma uchun:
+
+```text
+File:
+Problem:
+Why it matters:
+Fix:
+Priority:
+```
+
+---
+
+# 141. KEYIN IMPLEMENTATSIYA REJASI
+
+Priority:
+
+## P0 — Critical
+
+Fake scores
+
+fake API functions
+
+security problems
+
+broken AI output
+
+data loss
+
+## P1 — Learning Core
+
+curriculum
+
+mastery
+
+teacher memory
+
+non-repetition
+
+Writing/Speaking correctness
+
+## P2 — Speed
+
+streaming
+
+cache
+
+context compression
+
+request optimization
+
+## P3 — Media
+
+real video
+
+real voices
+
+persistent VRM
+
+## P4 — Desktop
+
+Electron packaging
+
+native storage
+
+secure secrets
+
+---
+
+# 142. HAR O‘ZGARISHDAN KEYIN BUILD CHECK
+
+Do not change 30 files blindly.
+
+Har logical batchdan keyin:
+
+```bash
+npm run lint
+npm run build
+```
+
+yoki projectdagi mos commandni ishlat.
+
+Errorni keyingi bosqichga olib o‘tma.
+
+---
+
+# 143. TYPESCRIPT XATOLARINI YASHIRMA
+
+`any`
+
+bilan hamma muammoni yopma.
+
+AI response, lessons, scores, voice, mistake memory uchun real TypeScript types yoz.
+
+---
+
+# 144. FINAL CODE QUALITY
+
+Duplicate business logic qolmasin.
+
+Masalan Reading va Speaking'da word saving uchun ikkita butunlay boshqa implementation yaratma.
+
+Shared service ishlat.
+
+---
+
+# 145. SOURCE OF TRUTH PRINCIPLE
+
+Quyidagilar bittadan source of truthga ega bo‘lsin:
+
+Student Level
+
+Teacher Profile
+
+Voice
+
+AI Provider
+
+Curriculum State
+
+Progress
+
+Mistake Memory.
+
+---
+
+# 146. FINAL USER EXPERIENCE
+
+Student appni o‘rnatadi.
+
+API config qiladi.
+
+Teacher/voice tanlaydi.
+
+Zero leveldan boshlaydi.
+
+App:
+
+`Today we will learn I / am / you / are.`
+
+deydi.
+
+Student:
+
+small lesson.
+
+Reading.
+
+Speaking.
+
+Writing.
+
+3 class tasks.
+
+10 homework.
+
+Progress saqlanadi.
+
+Ertasi kuni app:
+
+kechagi bilimni qisqacha tekshiradi.
+
+Yangi bitta concept qo‘shadi.
+
+Student xato qilsa teacher aynan o‘sha xatoni tuzatadi.
+
+Teacher allaqachon aytgan gapni shunchaki boshqa so‘z bilan qayta bermaydi.
+
+Vaqt o‘tishi bilan difficulty:
+
+Zero → A1 → A2 → B1 → B2 → C1 → IELTS preparation
+
+ko‘tariladi.
+
+---
+
+# 147. FINAL AI TEACHER RULE
+
+Har bir teacher turn uchun ichki tekshiruv:
+
+```text
+1. Student nimani biladi?
+2. Student hozir nimani o‘rganmoqda?
+3. Oxirgi javoblarda nimalar aytildi?
+4. Men hozir takrorlayapmanmi?
+5. Men yangi qanday bilim beryapman?
+6. Bu student leveliga mosmi?
+7. Javobimni qisqaroq qilish mumkinmi?
+8. Studentni o‘zimdan ko‘proq ishlatyapmanmi?
+```
+
+Agar javobda yangi pedagogik qiymat bo‘lmasa:
+
+uni studentga chiqarma.
+
+---
+
+# 148. TEACHER OUTPUT PRINCIPLE
+
+**Har gapning vazifasi bo‘lsin.**
+
+Keraksiz:
+
+- filler
+- takror
+- ortiqcha maqtov
+- bir xil savol
+- uzun lecture
+
+bo‘lmasin.
+
+Har yangi gap:
+
+**yangi ma’lumot, yangi savol, yangi misol, yangi correction yoki yangi keyingi qadam** berishi kerak.
+
+---
+
+# 149. FINAL PRODUCT PRINCIPLE
+
+Bu app chatbot emas.
+
+Bu:
+
+**Adaptive AI English Learning System.**
+
+Formula:
+
+```text
+Teach
+→ Check
+→ Practice
+→ Speak
+→ Write
+→ Detect weakness
+→ Correct
+→ Review
+→ Increase difficulty
+→ Reuse knowledge
+→ Master
+```
+
+---
+
+# 150. TASK COMPLETION DEFINITION
+
+Loyihani “production ready” deb hisoblashdan oldin quyidagilar bajarilishi shart:
+
+- demo video yo‘q
+- fake scores yo‘q
+- fake provider yo‘q
+- fake voice yo‘q
+- API secrets safe
+- VRM persistent
+- Writing real endpoint bilan
+- Speaking real data bilan
+- pronunciation fake emas
+- AI response duplicate emas
+- lesson progression deterministic
+- 3 class tasks mavjud
+- 10 homework mavjud
+- mistake memory ishlaydi
+- skills bir-biriga bog‘langan
+- API failover to‘g‘ri
+- cache mavjud
+- context compressed
+- streaming imkon qadar ishlaydi
+- app restartdan keyin progress saqlanadi
+- build errors yo‘q
+- TypeScript errors yo‘q
+- failure holatlari appni crash qilmaydi.
+
+Bu talablarning birortasini UI bilan yashirma.
+
+**Functionality first, correctness second, speed third, visual polish fourth — lekin release vaqtida to‘rttalasi ham bajarilgan bo‘lsin.**
